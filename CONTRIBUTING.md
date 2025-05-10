@@ -1,97 +1,93 @@
-# Contributing to gowelle/azure-moderator
+# Contributing
 
-🎉 Thanks for considering contributing to **gowelle/azure-moderator**! Your help makes this project better and helps the Laravel community.
-
-Please take a moment to read these guidelines.
+Thank you for considering contributing to the Azure Content Safety Laravel package! This document outlines the guidelines and process for contributing.
 
 ---
 
-## 📋 Getting Started
+## Development Environment
 
-1. **Fork the repository**  
-   Click the "Fork" button at the top-right of this repo.
-
-2. **Clone your fork**
-
-   ```bash
-   git clone https://github.com/gowelle/azure-moderator.git
-   cd azure-moderator
-   ```
-
-3. **Install dependencies**
-
-   ```bash
-   composer install
-   ```
-
-4. **Run the tests**
-
-   ```bash
-   composer test
-   ```
+1. Fork the repository
+2. Clone your fork locally
+3. Install dependencies:
+```bash
+composer install
+```
+4. Create a branch for your changes:
+```bash
+git checkout -b feature/your-feature-name
+```
 
 ---
 
-## 💬 How to Contribute
+## Testing
 
-✅ Submit bug reports  
-✅ Suggest new features or improvements  
-✅ Write code (features, bugfixes, tests, docs)  
-✅ Improve the README or documentation
+We use Pest PHP for testing. Before submitting a pull request, please ensure all tests pass:
 
----
+```bash
+composer test
+```
 
-## 🛠️ Code Style
-
-- Follow [PSR-12](https://www.php-fig.org/psr/psr-12/) coding standards.
-- Use **PHPStan** / **Pint** (optional, but appreciated).
-- Add tests for all new features (we use [Pest](https://pestphp.com)).
+To add new tests, create a file in the `tests` directory following the existing test patterns.
 
 ---
 
-## 🚀 Creating a Pull Request
+## Coding Standards
 
-1. Create a new branch:
+This package follows the PSR-12 coding standard. We use Laravel Pint for code style enforcement:
 
-   ```bash
-   git checkout -b feature/my-feature
-   ```
-
-2. Make your changes.
-
-3. Commit with a clear message:
-
-   ```bash
-   git commit -m "Add my awesome feature"
-   ```
-
-4. Push to your fork:
-
-   ```bash
-   git push origin feature/my-feature
-   ```
-
-5. Open a pull request (PR) against `main` on GitHub.
+```bash
+composer format
+```
 
 ---
 
-## ✅ Before Submitting
+## Pull Request Process
 
-- [ ] Run the tests (`composer test`).
-- [ ] Check for linting / coding standard issues.
-- [ ] Confirm the feature or fix works as expected.
-- [ ] Write clear commit messages.
-- [ ] Describe your changes clearly in the pull request.
-
----
-
-## 🙌 Thank You!
-
-Thank you for helping improve **gowelle/azure-moderator**!  
-We ❤️ our contributors.
+1. Update the README.md with details of changes to the interface, if applicable
+2. Add any new tests that cover your changes
+3. Ensure the test suite passes
+4. Update the CHANGELOG.md with a note describing your changes
+5. Submit the pull request with a clear title and description
 
 ---
 
-## 📣 Contact
+## Bug Reports
 
-If you have questions, feel free to open an issue or reach out on GitHub.
+When filing an issue, make sure to include:
+
+- Package version
+- PHP version
+- Laravel version
+- A clear description of the issue
+- Steps to reproduce
+- Expected behavior
+- Actual behavior
+
+---
+
+## Feature Requests
+
+Feature requests are welcome! Please provide:
+
+- A clear description of the feature
+- Use cases and benefits
+- Any potential drawbacks
+- Implementation ideas (if any)
+
+---
+
+## Security Vulnerabilities
+
+If you discover a security vulnerability, please send an email to [security@gowelle.com](mailto:security@gowelle.com) instead of using the issue tracker.
+
+---
+
+## Code of Conduct
+
+This project adheres to a Code of Conduct. By participating in this project, you are expected to uphold this code.
+
+---
+
+## License
+
+By contributing to this package, you agree that your contributions will be licensed under its MIT License.
