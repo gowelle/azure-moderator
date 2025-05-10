@@ -3,6 +3,7 @@
 [![Tests](https://github.com/gowelle/azure-moderator/actions/workflows/test.yml/badge.svg)](https://github.com/gowelle/azure-moderator/actions/workflows/test.yml)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/gowelle/azure-moderator.svg)](https://packagist.org/packages/gowelle/azure-moderator)
 [![Total Downloads](https://img.shields.io/packagist/dt/gowelle/azure-moderator.svg)](https://packagist.org/packages/gowelle/azure-moderator)
+[![Security Policy](https://img.shields.io/badge/security-policy-brightgreen.svg)](https://github.com/gowelle/azure-moderator/blob/main/SECURITY.md)
 
 A Laravel package for content moderation using Azure Content Safety API.
 
