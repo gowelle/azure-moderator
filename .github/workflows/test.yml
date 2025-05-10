@@ -1,4 +1,4 @@
-name: Run Tests
+name: Run Package Tests
 
 on:
   push:
@@ -7,21 +7,8 @@ on:
   pull_request:
 
 jobs:
-  laravel-tests:
+  test:
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: test_db
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
 
     steps:
       - name: Checkout code
@@ -31,29 +18,14 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: mbstring, pdo, mysql, curl, dom, fileinfo
+          extensions: mbstring, pdo, sqlite, curl
           coverage: none
 
-      - name: Install Composer dependencies
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
-
-      - name: Set up environment
-        run: |
-          cp .env.example .env
-          php artisan key:generate
-        env:
-          DB_CONNECTION: mysql
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: test_db
-          DB_USERNAME: root
-          DB_PASSWORD: root
-
-      - name: Run migrations
-        run: php artisan migrate --force
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
 
       - name: Run tests
         run: composer test
 
-      - name: Run code lint (optional)
+      - name: Lint code
         run: composer format
