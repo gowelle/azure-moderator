@@ -1,0 +1,64 @@
+{
+    "name": "gowelle/azure-moderator",
+    "description": "Azure Content Moderator wrapper for Laravel",
+    "keywords": [
+        "azure",
+        "moderator",
+        "laravel",
+        "content",
+        "moderation"
+    ],
+    "type": "library",
+    "require": {
+        "php": "^8.2",
+        "illuminate/support": "^10.0 || ^11.0 || ^12.0",
+        "guzzlehttp/guzzle": "^7.9"
+    },
+    "require-dev": {
+        "pestphp/pest": "^2.0",
+        "pestphp/pest-plugin-laravel": "^2.0",
+        "orchestra/testbench": "^8.0",
+        "spatie/laravel-package-tools": "^1.0",
+        "laravel/pint": "^1.0",
+        "mockery/mockery": "^1.6"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Gowelle\\AzureModerator\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "John Gowelle",
+            "email": "gowelle.john@icloud.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "scripts": {
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage",
+        "format": "vendor/bin/pint"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Gowelle\\AzureModerator\\AzureContentSafetyServiceProvider"
+            ],
+            "aliases": {
+                "AzureModerator": "Gowelle\\AzureModerator\\Facades\\AzureModerator"
+            }
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
