@@ -2,12 +2,11 @@
 
 namespace Gowelle\AzureModerator;
 
-use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\AzureContentSafetyServiceContract
 {
-    protected $client;
     protected string|null $endpoint;
     protected string|null $apiKey;
 
@@ -15,29 +14,26 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
     {
         $this->endpoint = config('azure-moderator.endpoint');
         $this->apiKey = config('azure-moderator.api_key');
-
-        $this->client = new Client([
-            'base_uri' => $this->endpoint,
-            'headers' => [
-                'Ocp-Apim-Subscription-Key' => $this->apiKey,
-                'Content-Type' => 'application/json',
-            ],
-        ]);
     }
 
     public function moderate(string $text, float $rating): array
     {
         try {
-            $response = $this->client->post([
-                'json' => [
-                    'text' => $text,
-                    'categories' => ['Hate', 'SelfHarm', 'Sexual', 'Violence'],
-                ],
+            $response = Http::withHeaders([
+                'Ocp-Apim-Subscription-Key' => $this->apiKey,
+                'Content-Type' => 'application/json',
+            ])->post($this->endpoint, [
+                'text' => $text,
+                'categories' => ['Hate', 'SelfHarm', 'Sexual', 'Violence'],
             ]);
 
-            $result = json_decode($response->getBody(), true);
+            if (! $response->successful()) {
+                throw new \Exception('Azure API request failed: ' . $response->body());
+            }
 
+            $result = $response->json();
             $scores = $result['categoriesAnalysis'] ?? [];
+            
             $hasHighRisk = collect($scores)->contains(function ($item) {
                 return $item['severity'] >= 3; // 3 = high severity
             });
