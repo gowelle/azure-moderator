@@ -28,7 +28,7 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
     public function moderate(string $text, float $rating): array
     {
         try {
-            $response = $this->client->post('/contentsafety/text:analyze', [
+            $response = $this->client->post([
                 'json' => [
                     'text' => $text,
                     'categories' => ['Hate', 'SelfHarm', 'Sexual', 'Violence'],
