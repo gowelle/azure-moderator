@@ -23,7 +23,7 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
             $response = Http::withHeaders([
                 'Ocp-Apim-Subscription-Key' => $this->apiKey,
                 'Content-Type' => 'application/json',
-            ])->post($this->endpoint . '/text/analytics:analyze', [
+            ])->post($this->endpoint . '/contentsafety/text:analyze?api-version=2024-09-01', [
                 'text' => $text,
                 'categories' => ['Hate', 'SelfHarm', 'Sexual', 'Violence'],
             ]);
