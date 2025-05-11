@@ -8,9 +8,14 @@ use Illuminate\Support\Facades\Log;
 class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\AzureContentSafetyServiceContract
 {
     protected $client;
+    protected string|null $endpoint;
+    protected string|null $apiKey;
 
-    public function __construct(protected $endpoint, protected $apiKey)
+    public function __construct()
     {
+        $this->endpoint = config('azure-moderator.endpoint');
+        $this->apiKey = config('azure-moderator.api_key');
+
         $this->client = new Client([
             'base_uri' => $this->endpoint,
             'headers' => [

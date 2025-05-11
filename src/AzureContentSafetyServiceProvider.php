@@ -23,18 +23,10 @@ class AzureContentSafetyServiceProvider extends PackageServiceProvider
 
     public function registeringPackage()
     {
-        $this->app->when(AzureContentSafetyServiceContract::class)
-            ->needs('$endpoint')
-            ->give(config('azure-moderator.endpoint'));
-
-        $this->app->when(AzureContentSafetyServiceContract::class)
-            ->needs('$apiKey')
-            ->give(config('azure-moderator.api_key'));
-
         $this->app->bind(AzureContentSafetyServiceContract::class, AzureContentSafetyService::class);
 
         $this->app->singleton('gowelle.azure-moderator', function ($app) {
-            return app(AzureContentSafetyServiceContract::class);
+            return new AzureContentSafetyService;
         });
     }
 }
