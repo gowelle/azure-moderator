@@ -106,11 +106,11 @@ composer test
 
 ## Changelog
 
-Please see [CHANGELOG.md](CHANGELOG.md) for more information on what has changed recently.
+Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 
 ## Contributing
 
-Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## Security
 
@@ -120,7 +120,7 @@ Please review our [Security Policy](SECURITY.md) for more details.
 
 ## Credits
 
-- [Your Name](https://github.com/gowelle)
+- [John Gowelle](https://github.com/gowelle)
 - [All Contributors](../../contributors)
 
 ## License
