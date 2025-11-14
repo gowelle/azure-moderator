@@ -215,9 +215,10 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
         ?array $categories = null,
         string $encoding = 'url'
     ): array {
-        try {
-            $this->validateImageRequest($image, $encoding);
+        // Validate input - these exceptions should be thrown, not caught
+        $this->validateImageRequest($image, $encoding);
 
+        try {
             $response = $this->makeImageApiRequest(
                 image: $image,
                 encoding: $encoding,

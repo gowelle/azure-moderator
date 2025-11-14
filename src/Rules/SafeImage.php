@@ -77,6 +77,15 @@ class SafeImage implements ValidationRule
                 encoding: 'base64'
             );
 
+            // Check if API failed (indicated by null scores) and strict mode is enabled
+            if ($result['scores'] === null && config('azure-moderator.fail_on_api_error', false)) {
+                \Illuminate\Support\Facades\Log::warning('Image moderation API unavailable', [
+                    'attribute' => $attribute,
+                ]);
+                $fail('Unable to validate :attribute safety. Please try again.');
+                return;
+            }
+
             // Check if image was flagged
             if ($result['status'] === 'flagged') {
                 $reason = $result['reason'] ?? 'harmful content';
