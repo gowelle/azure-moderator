@@ -61,7 +61,14 @@ class SafeImage implements ValidationRule
 
         try {
             // Convert image to base64 for moderation
-            $imageData = base64_encode(file_get_contents($value->getRealPath()));
+            $contents = file_get_contents($value->getRealPath());
+            
+            if ($contents === false) {
+                $fail('Unable to read :attribute file.');
+                return;
+            }
+            
+            $imageData = base64_encode($contents);
 
             // Moderate the image
             $result = AzureModerator::moderateImage(
@@ -77,21 +84,26 @@ class SafeImage implements ValidationRule
             }
 
         } catch (ModerationException $e) {
-            // Log the error but don't fail validation on API errors
-            // This prevents blocking users when Azure API is down
+            // Log the error
             \Illuminate\Support\Facades\Log::warning('Image moderation validation failed', [
                 'attribute' => $attribute,
                 'error' => $e->getMessage(),
             ]);
 
-            // Optionally fail validation on API errors
-            // Uncomment the line below to enforce strict validation
-            // $fail('Unable to validate :attribute safety. Please try again.');
+            // Check if we should fail validation on API errors
+            if (config('azure-moderator.fail_on_api_error', false)) {
+                $fail('Unable to validate :attribute safety. Please try again.');
+            }
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Unexpected error during image validation', [
                 'attribute' => $attribute,
                 'error' => $e->getMessage(),
             ]);
+
+            // Fail validation on unexpected errors
+            if (config('azure-moderator.fail_on_api_error', false)) {
+                $fail('Unable to validate :attribute safety. Please try again.');
+            }
         }
     }
 }

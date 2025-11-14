@@ -55,14 +55,16 @@ interface AzureContentSafetyServiceContract
      * This method analyzes image content for potentially harmful content.
      * Supports both URL and base64-encoded images.
      *
+     * On API failures, returns an approved status by default (graceful degradation).
+     * This ensures users aren't blocked during Azure API outages.
+     *
      * @param string $image Either a URL to the image or base64-encoded image data
      * @param array|null $categories Optional categories to analyze, defaults to all categories
      * @param string $encoding Either 'url' (default) or 'base64' to indicate image format
      * @return array{status: string, reason: string|null, scores: array|null} Returns an array with moderation status, optional reason, and severity scores
-     * @throws \Gowelle\AzureModerator\Exceptions\ModerationException When API request fails
      * @throws \InvalidArgumentException When input validation fails
      *
-     * Example response:
+     * Example response (success):
      * ```php
      * [
      *     'status' => 'flagged',
@@ -71,6 +73,15 @@ interface AzureContentSafetyServiceContract
      *         ['category' => 'Violence', 'severity' => 6],
      *         ['category' => 'Hate', 'severity' => 0]
      *     ]
+     * ]
+     * ```
+     *
+     * Example response (API failure):
+     * ```php
+     * [
+     *     'status' => 'approved',
+     *     'reason' => null,
+     *     'scores' => null
      * ]
      * ```
      */

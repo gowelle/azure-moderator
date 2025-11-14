@@ -201,12 +201,14 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
      * This method analyzes image content for potentially harmful content.
      * Supports both URL and base64-encoded images.
      *
+     * On API failures, returns an approved status by default (graceful degradation).
+     * This behavior ensures users aren't blocked during Azure API outages.
+     *
      * @param string $image Either a URL to the image or base64-encoded image data
      * @param array|null $categories Optional categories to analyze, defaults to all
      * @param string $encoding Either 'url' (default) or 'base64' to indicate image format
      * @return array{status: string, reason: string|null, scores: array|null} Moderation result
      * @throws InvalidArgumentException When input validation fails
-     * @throws ModerationException When API request fails
      */
     public function moderateImage(
         string $image,
@@ -240,7 +242,11 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
                 'encoding' => $encoding
             ]);
 
-            throw $e;
+            // Return approved status on API failure (graceful degradation)
+            return array_merge(
+                (new ModerationResult(status: ModerationStatus::APPROVED))->toArray(),
+                ['scores' => null]
+            );
         }
     }
 
@@ -320,8 +326,10 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
         }
 
         // Validate base64 length (Azure has limits)
-        if ($encoding === 'base64' && strlen($image) > 4194304) { // 4MB limit for base64
-            throw new \InvalidArgumentException('Base64 image data exceeds maximum size of 4MB');
+        // Note: This is the base64 string length limit, not the original image size.
+        // Base64 encoding increases size by ~33%, so this limits original images to ~3MB.
+        if ($encoding === 'base64' && strlen($image) > 4194304) { // 4MB limit for base64 string
+            throw new \InvalidArgumentException('Base64 image data exceeds maximum size of 4MB (approximately 3MB original image size)');
         }
     }
 

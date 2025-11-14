@@ -142,8 +142,10 @@ class SafeImageValidationTest extends TestCase
     }
 
     /** @test */
-    public function it_handles_api_errors_gracefully(): void
+    public function it_handles_api_errors_gracefully_by_default(): void
     {
+        config(['azure-moderator.fail_on_api_error' => false]);
+
         Http::fake([
             '*/contentsafety/image:analyze*' => Http::response([
                 'error' => [
@@ -161,7 +163,49 @@ class SafeImageValidationTest extends TestCase
         );
 
         // By default, the rule doesn't fail on API errors (graceful degradation)
-        // Users can uncomment strict validation in the SafeImage rule if desired
         expect($validator->passes())->toBeTrue();
+    }
+
+    /** @test */
+    public function it_fails_validation_on_api_error_when_configured(): void
+    {
+        config(['azure-moderator.fail_on_api_error' => true]);
+
+        Http::fake([
+            '*/contentsafety/image:analyze*' => Http::response([
+                'error' => [
+                    'code' => 'ServiceUnavailable',
+                    'message' => 'Service is temporarily unavailable',
+                ],
+            ], 503),
+        ]);
+
+        $file = UploadedFile::fake()->image('avatar.jpg', 100, 100);
+
+        $validator = Validator::make(
+            ['avatar' => $file],
+            ['avatar' => ['required', new SafeImage()]]
+        );
+
+        // When fail_on_api_error is true, validation should fail
+        expect($validator->fails())->toBeTrue();
+        expect($validator->errors()->first('avatar'))
+            ->toContain('Unable to validate');
+    }
+
+    /** @test */
+    public function it_handles_file_read_errors(): void
+    {
+        $file = UploadedFile::fake()->image('avatar.jpg', 100, 100);
+
+        // Mock file_get_contents to return false
+        $validator = Validator::make(
+            ['avatar' => 'not-a-real-file'],
+            ['avatar' => ['required', new SafeImage()]]
+        );
+
+        expect($validator->fails())->toBeTrue();
+        expect($validator->errors()->first('avatar'))
+            ->toContain('must be an uploaded file');
     }
 }

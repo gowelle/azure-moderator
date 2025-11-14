@@ -48,7 +48,16 @@ AZURE_CONTENT_SAFETY_ENDPOINT=your-endpoint
 AZURE_CONTENT_SAFETY_API_KEY=your-api-key
 AZURE_CONTENT_SAFETY_LOW_RATING_THRESHOLD=2
 AZURE_CONTENT_SAFETY_HIGH_SEVERITY_THRESHOLD=6
+AZURE_MODERATOR_FAIL_ON_ERROR=false
 ```
+
+### Configuration Options
+
+- `AZURE_CONTENT_SAFETY_ENDPOINT`: Your Azure Content Safety API endpoint URL
+- `AZURE_CONTENT_SAFETY_API_KEY`: Your Azure API key (keep this secure!)
+- `AZURE_CONTENT_SAFETY_LOW_RATING_THRESHOLD`: Minimum rating to approve text content (0-5, default: 2)
+- `AZURE_CONTENT_SAFETY_HIGH_SEVERITY_THRESHOLD`: Minimum severity to flag content (0-7, default: 3)
+- `AZURE_MODERATOR_FAIL_ON_ERROR`: Whether validation should fail when API is unavailable (default: false)
 
 ## Usage
 
@@ -119,6 +128,8 @@ $result = AzureModerator::moderateImage(
 );
 ```
 
+**Note:** Base64 images are limited to 4MB of encoded data, which corresponds to approximately 3MB of original image size (due to base64 encoding overhead of ~33%).
+
 #### Image Moderation with Custom Categories
 
 ```php
@@ -160,13 +171,15 @@ $request->validate([
 
 ### Error Handling
 
+The package provides graceful error handling to ensure users aren't blocked during Azure API outages:
+
 ```php
 use Gowelle\AzureModerator\Exceptions\ModerationException;
 
 try {
     $result = AzureModerator::moderate('Some text content', 4.5);
 } catch (ModerationException $e) {
-    // Handle API errors
+    // Handle API errors (only thrown for input validation errors in moderate())
     Log::error('Moderation failed', [
         'message' => $e->getMessage(),
         'endpoint' => $e->endpoint,
@@ -174,6 +187,11 @@ try {
     ]);
 }
 ```
+
+**Graceful Degradation:**
+- When the Azure API is unavailable, both `moderate()` and `moderateImage()` return approved status by default
+- For the `SafeImage` validation rule, set `AZURE_MODERATOR_FAIL_ON_ERROR=true` to enforce strict validation
+- This prevents blocking users during API outages while maintaining security when needed
 
 ### Artisan Commands
 

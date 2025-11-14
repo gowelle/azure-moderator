@@ -199,7 +199,7 @@ class ImageModerationTest extends TestCase
     public function it_throws_exception_for_oversized_base64_image(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Base64 image data exceeds maximum size of 4MB');
+        $this->expectExceptionMessage('Base64 image data exceeds maximum size of 4MB (approximately 3MB original image size)');
 
         // Create a string larger than 4MB
         $largeBase64 = str_repeat('a', 4194305);
@@ -208,7 +208,7 @@ class ImageModerationTest extends TestCase
     }
 
     /** @test */
-    public function it_throws_moderation_exception_on_api_error(): void
+    public function it_returns_approved_on_api_error_with_graceful_degradation(): void
     {
         Http::fake([
             '*/contentsafety/image:analyze*' => Http::response([
@@ -219,9 +219,13 @@ class ImageModerationTest extends TestCase
             ], 400),
         ]);
 
-        $this->expectException(ModerationException::class);
+        $result = AzureModerator::moderateImage('https://example.com/image.jpg');
 
-        AzureModerator::moderateImage('https://example.com/image.jpg');
+        expect($result)
+            ->toBeArray()
+            ->toHaveKey('status', 'approved')
+            ->toHaveKey('reason', null)
+            ->toHaveKey('scores', null);
     }
 
     /** @test */

@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `fail_on_api_error` configuration option for controlling validation behavior during API outages
+- Error handling for `file_get_contents()` failures in SafeImage validation rule
+
+### Changed
+- **Breaking:** `moderateImage()` now returns approved status on API failures instead of throwing exceptions (consistent with `moderate()`)
+- Updated SafeImage validation rule to respect `fail_on_api_error` configuration
+- Improved error handling consistency between text and image moderation
+- Enhanced documentation to clarify base64 size limits (4MB encoded = ~3MB original)
+- Updated service contract documentation to reflect graceful degradation behavior
+
+### Fixed
+- SafeImage validation rule no longer has commented-out code for strict validation
+- Added proper error handling for file read failures in SafeImage rule
+- Clarified that base64 size limit applies to encoded data, not original image size
+
 ## [1.2.0] - 2025-11-14
 
 ### Added
