@@ -2,6 +2,7 @@
 
 namespace Gowelle\AzureModerator;
 
+use Gowelle\AzureModerator\Commands\TestImageModerationCommand;
 use Gowelle\AzureModerator\Contracts\AzureContentSafetyServiceContract;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
@@ -26,6 +27,7 @@ class AzureContentSafetyServiceProvider extends PackageServiceProvider
         $package
             ->name('azure-moderator')
             ->hasConfigFile('azure-moderator')
+            ->hasCommand(TestImageModerationCommand::class)
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
                     ->publishConfigFile('azure-moderator')

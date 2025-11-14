@@ -4,14 +4,17 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/gowelle/azure-moderator.svg)](https://packagist.org/packages/gowelle/azure-moderator)
 [![Total Downloads](https://img.shields.io/packagist/dt/gowelle/azure-moderator.svg)](https://packagist.org/packages/gowelle/azure-moderator)
 
-A Laravel package for content moderation using Azure Content Safety API. This package helps you analyze text content for potentially harmful content and automatically flag or approve content based on Azure's analysis and user ratings.
+A Laravel package for content moderation using Azure Content Safety API. This package helps you analyze both text and image content for potentially harmful material, automatically flagging or approving content based on Azure's AI-powered analysis.
 
 ## Features
 
 - Easy integration with Azure Content Safety API
+- **Text and Image content moderation**
 - Automatic content analysis and flagging
 - Configurable severity thresholds
-- User rating support
+- User rating support (for text moderation)
+- Laravel validation rules for images
+- Artisan command for testing
 - Retry handling for API failures
 - Laravel-native configuration
 - Extensive logging
@@ -49,7 +52,9 @@ AZURE_CONTENT_SAFETY_HIGH_SEVERITY_THRESHOLD=6
 
 ## Usage
 
-### Basic Usage
+### Text Moderation
+
+#### Basic Usage
 
 ```php
 use Gowelle\AzureModerator\Facades\AzureModerator;
@@ -66,7 +71,7 @@ if ($result['status'] === 'approved') {
 }
 ```
 
-### Custom Categories
+#### Custom Categories
 
 ```php
 use Gowelle\AzureModerator\Enums\ContentCategory;
@@ -79,6 +84,78 @@ $result = AzureModerator::moderate(
         ContentCategory::VIOLENCE->value
     ]
 );
+```
+
+### Image Moderation
+
+#### Basic Image Moderation
+
+```php
+use Gowelle\AzureModerator\Facades\AzureModerator;
+
+// Moderate image by URL
+$result = AzureModerator::moderateImage('https://example.com/image.jpg');
+
+// Check result
+if ($result['status'] === 'approved') {
+    // Image is safe
+} else {
+    // Image was flagged
+    $reason = $result['reason'];
+    $scores = $result['scores']; // Detailed severity scores
+}
+```
+
+#### Base64 Image Moderation
+
+```php
+// Moderate uploaded image
+$imageData = file_get_contents($uploadedFile->getRealPath());
+$base64Image = base64_encode($imageData);
+
+$result = AzureModerator::moderateImage(
+    image: $base64Image,
+    encoding: 'base64'
+);
+```
+
+#### Image Moderation with Custom Categories
+
+```php
+use Gowelle\AzureModerator\Enums\ContentCategory;
+
+$result = AzureModerator::moderateImage(
+    image: 'https://example.com/image.jpg',
+    categories: [
+        ContentCategory::SEXUAL->value,
+        ContentCategory::VIOLENCE->value
+    ]
+);
+```
+
+### Laravel Validation
+
+Use the `SafeImage` validation rule to automatically validate uploaded images:
+
+```php
+use Gowelle\AzureModerator\Rules\SafeImage;
+
+// In your form request or controller
+$request->validate([
+    'avatar' => ['required', 'image', 'max:2048', new SafeImage()],
+]);
+
+// With custom categories
+$request->validate([
+    'profile_picture' => [
+        'required',
+        'image',
+        new SafeImage([
+            ContentCategory::SEXUAL->value,
+            ContentCategory::VIOLENCE->value
+        ])
+    ],
+]);
 ```
 
 ### Error Handling
@@ -96,6 +173,18 @@ try {
         'status' => $e->statusCode
     ]);
 }
+```
+
+### Artisan Commands
+
+Test image moderation from the command line:
+
+```bash
+# Test image moderation
+php artisan azure-moderator:test-image https://example.com/image.jpg
+
+# Test with specific categories
+php artisan azure-moderator:test-image https://example.com/image.jpg --categories=Sexual,Violence
 ```
 
 ## Testing

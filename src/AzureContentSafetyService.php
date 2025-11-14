@@ -196,6 +196,136 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
     }
 
     /**
+     * Moderate image content using Azure Content Safety API
+     *
+     * This method analyzes image content for potentially harmful content.
+     * Supports both URL and base64-encoded images.
+     *
+     * @param string $image Either a URL to the image or base64-encoded image data
+     * @param array|null $categories Optional categories to analyze, defaults to all
+     * @param string $encoding Either 'url' (default) or 'base64' to indicate image format
+     * @return array{status: string, reason: string|null, scores: array|null} Moderation result
+     * @throws InvalidArgumentException When input validation fails
+     * @throws ModerationException When API request fails
+     */
+    public function moderateImage(
+        string $image,
+        ?array $categories = null,
+        string $encoding = 'url'
+    ): array {
+        try {
+            $this->validateImageRequest($image, $encoding);
+
+            $response = $this->makeImageApiRequest(
+                image: $image,
+                encoding: $encoding,
+                categories: $categories ?? ContentCategory::defaultCategories()
+            );
+
+            $scores = $response->json()['categoriesAnalysis'] ?? [];
+
+            $analysis = $this->analyzeScores($scores);
+
+            $result = new ModerationResult(
+                status: $analysis['hasHighRisk'] ? ModerationStatus::FLAGGED : ModerationStatus::APPROVED,
+                reason: $analysis['reason'] ?: null
+            );
+
+            return array_merge($result->toArray(), ['scores' => $scores]);
+
+        } catch (\Exception $e) {
+            Log::error('Azure image moderation failed', [
+                'error' => $e->getMessage(),
+                'endpoint' => $this->config->endpoint,
+                'encoding' => $encoding
+            ]);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Make an API request to Azure Content Safety for image analysis
+     *
+     * @param string $image Image URL or base64 data
+     * @param string $encoding Image encoding type
+     * @param array $categories Categories to check
+     * @return Response
+     * @throws ModerationException When request fails
+     */
+    protected function makeImageApiRequest(string $image, string $encoding, array $categories): Response
+    {
+        $endpoint = rtrim($this->config->endpoint, '/')
+            . '/contentsafety/image:analyze?api-version=' . self::API_VERSION;
+
+        $payload = [
+            'categories' => $categories,
+        ];
+
+        if ($encoding === 'url') {
+            $payload['image'] = ['url' => $image];
+        } else {
+            $payload['image'] = ['content' => $image];
+        }
+
+        try {
+            $response = Http::retry(self::RETRY_ATTEMPTS, self::RETRY_DELAY_MS, function ($exception) {
+                return $exception instanceof RequestException &&
+                       in_array($exception->response->status(), self::RETRY_STATUS_CODES);
+            })->withHeaders([
+                'Ocp-Apim-Subscription-Key' => $this->config->apiKey,
+                'Content-Type' => 'application/json',
+            ])->post($endpoint, $payload);
+
+            $this->logApiResponse($response);
+
+            if ($response->failed()) {
+                throw new ModerationException(
+                    message: $this->getErrorMessage($response),
+                    endpoint: $this->config->endpoint,
+                    statusCode: $response->status()
+                );
+            }
+
+            return $response;
+
+        } catch (\Exception $e) {
+            throw new ModerationException(
+                message: 'Failed to connect to Azure API for image analysis',
+                endpoint: $this->config->endpoint,
+                previous: $e
+            );
+        }
+    }
+
+    /**
+     * Validate image request parameters
+     *
+     * @param string $image Image to validate
+     * @param string $encoding Encoding type
+     * @throws InvalidArgumentException When validation fails
+     */
+    protected function validateImageRequest(string $image, string $encoding): void
+    {
+        if (empty($image)) {
+            throw new \InvalidArgumentException('Image cannot be empty');
+        }
+
+        if (!in_array($encoding, ['url', 'base64'])) {
+            throw new \InvalidArgumentException('Encoding must be either "url" or "base64"');
+        }
+
+        if ($encoding === 'url' && !filter_var($image, FILTER_VALIDATE_URL)) {
+            throw new \InvalidArgumentException('Invalid image URL provided');
+        }
+
+        // Validate base64 length (Azure has limits)
+        if ($encoding === 'base64' && strlen($image) > 4194304) { // 4MB limit for base64
+            throw new \InvalidArgumentException('Base64 image data exceeds maximum size of 4MB');
+        }
+    }
+
+    /**
      * Analyze content safety scores
      *
      * Determines if content has high risk based on severity thresholds
