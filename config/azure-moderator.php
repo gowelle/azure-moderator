@@ -60,4 +60,20 @@ return [
     |
     */
     'high_severity_threshold' => env('AZURE_CONTENT_SAFETY_HIGH_SEVERITY_THRESHOLD', 3),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Fail on API Error
+    |--------------------------------------------------------------------------
+    |
+    | Determines whether validation should fail when the Azure API is unavailable
+    | or returns an error. When set to false (default), validation will pass
+    | gracefully to prevent blocking users during API outages. When true,
+    | validation will fail if the API cannot be reached.
+    |
+    | This setting affects the SafeImage validation rule and can be used
+    | to enforce strict content moderation when required.
+    |
+    */
+    'fail_on_api_error' => env('AZURE_MODERATOR_FAIL_ON_ERROR', false),
 ];

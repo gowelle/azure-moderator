@@ -11,14 +11,22 @@ use Illuminate\Support\Facades\Facade;
  * allowing for easy access to content moderation functionality throughout your
  * Laravel application.
  *
- * Usage example:
+ * Usage examples:
  * ```php
  * use Gowelle\AzureModerator\Facades\AzureModerator;
  *
+ * // Moderate text
  * $result = AzureModerator::moderate('Some text', 4.5);
+ *
+ * // Moderate image by URL
+ * $imageResult = AzureModerator::moderateImage('https://example.com/image.jpg');
+ *
+ * // Moderate base64 image
+ * $base64Result = AzureModerator::moderateImage($base64Data, encoding: 'base64');
  * ```
  *
  * @method static array moderate(string $text, float $rating, ?array $categories = null)
+ * @method static array moderateImage(string $image, ?array $categories = null, string $encoding = 'url')
  *
  * @see \Gowelle\AzureModerator\AzureContentSafetyService
  * @see \Gowelle\AzureModerator\Contracts\AzureContentSafetyServiceContract
