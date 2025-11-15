@@ -27,6 +27,32 @@ We use Pest PHP for testing. Before submitting a pull request, please ensure all
 composer test
 ```
 
+### Test Coverage
+
+When adding features or fixing bugs, please ensure your changes include tests covering:
+
+- **Happy path scenarios:** Valid inputs producing expected results
+- **Error scenarios:** API failures, network issues, invalid inputs
+- **Configuration variations:** Test both `fail_on_api_error` true and false states
+- **Graceful degradation:** Verify API errors are handled appropriately
+- **Edge cases:** Large inputs, special characters, boundary values
+
+### Example Test Patterns
+
+```php
+// Test graceful degradation (fail_on_api_error = false)
+test('moderateImage returns approved on API failure with fail_on_api_error false')
+    ->expect(...);
+
+// Test strict mode (fail_on_api_error = true)
+test('SafeImage validation fails on API error with fail_on_api_error true')
+    ->expect(...);
+
+// Test retry logic
+test('Service retries on transient errors (429, 500, 503)')
+    ->expect(...);
+```
+
 To add new tests, create a file in the `tests` directory following the existing test patterns.
 
 ---

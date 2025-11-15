@@ -8,20 +8,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- `fail_on_api_error` configuration option for controlling validation behavior during API outages
+- `fail_on_api_error` configuration option (env: `AZURE_MODERATOR_FAIL_ON_ERROR`) for controlling validation behavior during API outages
 - Error handling for `file_get_contents()` failures in SafeImage validation rule
+- Automatic retry logic with exponential backoff for transient API errors (429, 500, 503)
+- Enhanced documentation explaining graceful degradation vs. strict validation modes
+- Configuration guide for fail_on_api_error option with use case recommendations
 
 ### Changed
 - **Breaking:** `moderateImage()` now returns approved status on API failures instead of throwing exceptions (consistent with `moderate()`)
 - Updated SafeImage validation rule to respect `fail_on_api_error` configuration
-- Improved error handling consistency between text and image moderation
+- Improved error handling consistency between text and image moderation methods
 - Enhanced documentation to clarify base64 size limits (4MB encoded = ~3MB original)
 - Updated service contract documentation to reflect graceful degradation behavior
+- Expanded README with comprehensive error handling section covering both default and strict modes
+- File read errors in SafeImage rule now logged and handled gracefully
 
 ### Fixed
 - SafeImage validation rule no longer has commented-out code for strict validation
 - Added proper error handling for file read failures in SafeImage rule
 - Clarified that base64 size limit applies to encoded data, not original image size
+- Fixed error message clarity in SafeImage validation failure scenarios
+- Improved error logging for debugging API issues
 
 ## [1.2.0] - 2025-11-14
 

@@ -171,7 +171,7 @@ $request->validate([
 
 ### Error Handling
 
-The package provides graceful error handling to ensure users aren't blocked during Azure API outages:
+The package provides flexible error handling to ensure both security and user experience:
 
 ```php
 use Gowelle\AzureModerator\Exceptions\ModerationException;
@@ -188,10 +188,35 @@ try {
 }
 ```
 
-**Graceful Degradation:**
-- When the Azure API is unavailable, both `moderate()` and `moderateImage()` return approved status by default
-- For the `SafeImage` validation rule, set `AZURE_MODERATOR_FAIL_ON_ERROR=true` to enforce strict validation
-- This prevents blocking users during API outages while maintaining security when needed
+#### Graceful Degradation and Strict Mode
+
+The `fail_on_api_error` configuration controls how the package behaves when the Azure API is unavailable:
+
+**Default Behavior (fail_on_api_error = false):**
+- When the Azure API fails or is unavailable, both `moderate()` and `moderateImage()` return approved status
+- The `SafeImage` validation rule passes validation, allowing content through
+- This prevents blocking users during API outages
+- Best for: Production environments prioritizing user experience
+
+**Strict Mode (fail_on_api_error = true):**
+- When the Azure API fails, the `SafeImage` validation rule fails with message: "Unable to validate :attribute safety. Please try again."
+- Content cannot be moderated until the API is available
+- Best for: High-security environments requiring strict content moderation enforcement
+
+**Configuration:**
+```env
+# Default: false (graceful degradation)
+AZURE_MODERATOR_FAIL_ON_ERROR=false
+
+# Strict mode: true (fail validation on API errors)
+AZURE_MODERATOR_FAIL_ON_ERROR=true
+```
+
+**Retry Logic:**
+The package includes automatic retry logic with exponential backoff for:
+- Rate limit errors (429)
+- Server errors (500, 503)
+- Up to 3 retry attempts per request
 
 ### Artisan Commands
 
