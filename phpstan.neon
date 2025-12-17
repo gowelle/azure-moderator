@@ -6,5 +6,3 @@ parameters:
         - vendor
     ignoreErrors:
         - '#Offset .+ on .+ on left side of \?\? always exists and is not nullable#'
-        - '#Method .+::moderate\(\) return type has no value type specified in iterable type array#'
-        - '#Method .+::moderateWithContext\(\) return type has no value type specified in iterable type array#'

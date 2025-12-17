@@ -14,13 +14,14 @@ A Laravel package for content moderation using Azure Content Safety API. This pa
 - **Multi-Modal Analysis (Batch & Async)**
 - **Custom Blocklist Management**
 - **Protected Material Detection**
+- **Strongly-typed DTO responses** (ModerationResult, CategoryAnalysis)
 - Automatic content analysis and flagging
 - Configurable severity thresholds
 - User rating support (for text moderation)
 - Laravel validation rules for text and images
 - Artisan commands for testing & management
 - Retry handling for API failures
-- **Comprehensive test suite (54+ tests)**
+- **Comprehensive test suite (90+ tests)**
 - **Integration tests with real Azure API**
 - **PHPStan level 6 static analysis**
 - **Performance benchmarks**
@@ -76,10 +77,10 @@ AZURE_MODERATOR_FAIL_ON_ERROR=false
 ```php
 use Gowelle\AzureModerator\Facades\AzureModerator;
 
-// Moderate content
+// Moderate content - returns ModerationResult DTO
 $result = AzureModerator::moderate('Some text content', 4.5);
 
-// Check result
+// Check result using DTO methods
 if ($result->isApproved()) {
     // Content is safe
 } else {
@@ -110,16 +111,16 @@ $result = AzureModerator::moderate(
 ```php
 use Gowelle\AzureModerator\Facades\AzureModerator;
 
-// Moderate image by URL
+// Moderate image by URL - returns ModerationResult DTO
 $result = AzureModerator::moderateImage('https://example.com/image.jpg');
 
-// Check result
+// Check result using DTO methods
 if ($result->isApproved()) {
     // Image is safe
 } else {
     // Image was flagged
     $reason = $result->reason;
-    $scores = $result->categoriesAnalysis; // Detailed severity scores
+    $scores = $result->categoriesAnalysis; // Array of CategoryAnalysis DTOs
 }
 ```
 
@@ -356,10 +357,10 @@ Integration tests validate the package against the real Azure Content Safety API
    ```
 
 **Test Coverage:**
-- 28 unit tests
-- 50 integration tests (Azure API)
-- 11 performance benchmarks
-- **Total: 89 tests with 100% pass rate**
+- 30+ unit tests
+- 50+ integration tests (Azure API)
+- 10+ performance benchmarks
+- **Total: 90+ tests with 100% pass rate**
 
 See [Integration Testing Guide](docs/INTEGRATION_TESTING.md) for detailed documentation.
 

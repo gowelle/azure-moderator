@@ -54,6 +54,14 @@
 > [!WARNING]
 > 
 
+### 🔄 Migration Guide
+<!-- Step-by-step instructions for migrating from previous version -->
+
+**From v1.3.x to v2.0.x:**
+1. 
+2. 
+3. 
+
 ---
 
 ### 🔗 Links

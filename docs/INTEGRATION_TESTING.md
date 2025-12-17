@@ -175,6 +175,8 @@ jobs:
 
 namespace Tests\Integration;
 
+use Gowelle\AzureModerator\Data\ModerationResult;
+use Gowelle\AzureModerator\Enums\ModerationStatus;
 use Gowelle\AzureModerator\Facades\AzureModerator;
 use Tests\TestCase;
 
@@ -200,10 +202,11 @@ class MyIntegrationTest extends TestCase
     {
         $result = AzureModerator::moderate('Test content', 4.0);
 
+        // Assert DTO type and properties
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status')
-            ->toHaveKey('reason');
+            ->toBeInstanceOf(ModerationResult::class)
+            ->and($result->isApproved())->toBeTrue()
+            ->and($result->status)->toBe(ModerationStatus::APPROVED);
     }
 }
 ```

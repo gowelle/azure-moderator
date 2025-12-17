@@ -98,28 +98,29 @@ $result = AzureModerator::moderate(
     haltOnBlocklistHit: true
 );
 
-if ($result['blocklistMatches']) {
-    // Handle blocklist match
-    foreach ($result['blocklistMatches'] as $match) {
-        echo "Matched term: " . $match['blocklistMatchValue'];
+// Check for blocklist matches using DTO properties
+if ($result->blocklistMatches) {
+    foreach ($result->blocklistMatches as $match) {
+        echo "Matched term: " . $match->matchValue;
+        echo "From blocklist: " . $match->blocklistName;
     }
 }
 ```
 
 ### Response Failure
 
-If a blocklist term is matched, the response will be flagged:
+If a blocklist term is matched, the result will be flagged:
 
 ```php
-[
-    'status' => 'flagged',
-    'reason' => 'Hate, blocklist_match', // or simply 'blocklist_match'
-    'blocklistMatches' => [
-        [
-            'blocklistName' => 'my-list',
-            'blocklistMatchId' => '...',
-            'blocklistMatchValue' => 'term1'
-        ]
-    ]
-]
+// The ModerationResult DTO indicates flagged status
+$result->isApproved();  // false
+$result->isFlagged();   // true
+$result->reason;        // 'Hate, blocklist_match' or simply 'blocklist_match'
+
+// Access blocklist matches (array of BlocklistMatch DTOs)
+foreach ($result->blocklistMatches as $match) {
+    $match->blocklistName;  // 'my-list'
+    $match->matchId;        // Azure match ID
+    $match->matchValue;     // 'term1'
+}
 ```

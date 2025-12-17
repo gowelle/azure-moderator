@@ -2,6 +2,9 @@
 
 This document provides example API requests and responses for the Azure Content Safety Laravel package.
 
+> [!NOTE]
+> As of v2.0.0, all moderation methods return strongly-typed DTO objects (`ModerationResult`) instead of arrays. The examples below show both the DTO usage and the underlying data structure.
+
 ## Text Moderation
 
 ### Example 1: Approved Content
@@ -13,11 +16,21 @@ use Gowelle\AzureModerator\Facades\AzureModerator;
 $result = AzureModerator::moderate('This is a great product! I highly recommend it.', 5.0);
 ```
 
-**Response**:
+**Response** (`ModerationResult` DTO):
+```php
+$result->isApproved();  // true
+$result->status;        // ModerationStatus::APPROVED
+$result->reason;        // null
+```
+
+**As Array** (via `$result->toArray()`):
 ```php
 [
     'status' => 'approved',
     'reason' => null,
+    'trackingId' => 'abc123...',
+    'categoriesAnalysis' => [...],
+    'blocklistMatches' => null,
 ]
 ```
 
@@ -30,12 +43,12 @@ $result = AzureModerator::moderate('This is a great product! I highly recommend 
 $result = AzureModerator::moderate('This product is okay.', 1.5);
 ```
 
-**Response**:
+**Response** (`ModerationResult` DTO):
 ```php
-[
-    'status' => 'flagged',
-    'reason' => 'low_rating',
-]
+$result->isApproved();  // false
+$result->isFlagged();   // true
+$result->status;        // ModerationStatus::FLAGGED
+$result->reason;        // 'low_rating'
 ```
 
 ---
@@ -47,12 +60,16 @@ $result = AzureModerator::moderate('This product is okay.', 1.5);
 $result = AzureModerator::moderate('Content with potentially harmful language.', 4.0);
 ```
 
-**Response** (if Azure detects high severity):
+**Response** (`ModerationResult` DTO if Azure detects high severity):
 ```php
-[
-    'status' => 'flagged',
-    'reason' => 'Hate',  // or 'Violence', 'Sexual', 'SelfHarm'
-]
+$result->isApproved();  // false
+$result->reason;        // 'Hate' or 'Violence', 'Sexual', 'SelfHarm'
+
+// Access detailed category scores
+foreach ($result->categoriesAnalysis as $analysis) {
+    echo $analysis->category->value; // 'Hate', 'Violence', etc.
+    echo $analysis->severity;        // 0-7
+}
 ```
 
 ---
@@ -70,12 +87,11 @@ $result = AzureModerator::moderate(
 );
 ```
 
-**Response**:
+**Response** (`ModerationResult` DTO):
 ```php
-[
-    'status' => 'approved',  // or 'flagged'
-    'reason' => null,        // or category name if flagged
-]
+$result->isApproved();        // true or false
+$result->reason;              // null or category name if flagged
+$result->categoriesAnalysis;  // Array of CategoryAnalysis DTOs
 ```
 
 ---
@@ -89,18 +105,16 @@ $result = AzureModerator::moderate(
 $result = AzureModerator::moderateImage('https://example.com/safe-image.jpg');
 ```
 
-**Response**:
+**Response** (`ModerationResult` DTO):
 ```php
-[
-    'status' => 'approved',
-    'reason' => null,
-    'scores' => [
-        ['category' => 'Hate', 'severity' => 0],
-        ['category' => 'SelfHarm', 'severity' => 0],
-        ['category' => 'Sexual', 'severity' => 0],
-        ['category' => 'Violence', 'severity' => 1],
-    ],
-]
+$result->isApproved();  // true
+$result->reason;        // null
+
+// Access category analysis
+foreach ($result->categoriesAnalysis as $analysis) {
+    echo $analysis->category->value; // 'Hate', 'SelfHarm', 'Sexual', 'Violence'
+    echo $analysis->severity;        // 0, 0, 0, 1
+}
 ```
 
 ---
@@ -112,18 +126,15 @@ $result = AzureModerator::moderateImage('https://example.com/safe-image.jpg');
 $result = AzureModerator::moderateImage('https://example.com/flagged-image.jpg');
 ```
 
-**Response**:
+**Response** (`ModerationResult` DTO):
 ```php
-[
-    'status' => 'flagged',
-    'reason' => 'Sexual, Violence',  // Multiple categories can be flagged
-    'scores' => [
-        ['category' => 'Hate', 'severity' => 0],
-        ['category' => 'SelfHarm', 'severity' => 0],
-        ['category' => 'Sexual', 'severity' => 6],
-        ['category' => 'Violence', 'severity' => 4],
-    ],
-]
+$result->isApproved();  // false
+$result->reason;        // 'Sexual, Violence' (multiple categories)
+
+// Get specific category severity using helper method
+use Gowelle\AzureModerator\Enums\ContentCategory;
+$result->getSeverity(ContentCategory::SEXUAL);   // 6
+$result->getSeverity(ContentCategory::VIOLENCE); // 4
 ```
 
 ---

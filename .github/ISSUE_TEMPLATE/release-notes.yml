@@ -13,8 +13,8 @@ body:
     id: version
     attributes:
       label: Version Number
-      description: Semantic version number (e.g., 1.3.0)
-      placeholder: "1.3.0"
+      description: Semantic version number (e.g., 2.0.0)
+      placeholder: "2.0.0"
     validations:
       required: true
 
@@ -23,7 +23,7 @@ body:
     attributes:
       label: Release Date
       description: Date of the release (YYYY-MM-DD)
-      placeholder: "2025-12-17"
+      placeholder: "2025-12-18"
     validations:
       required: true
 
@@ -114,6 +114,20 @@ body:
       placeholder: |
         - Configuration key X has been renamed to Y
         - Method signature changed for Z
+        - Return type changed from array to DTO
+    validations:
+      required: false
+
+  - type: textarea
+    id: migration-guide
+    attributes:
+      label: 🔄 Migration Guide
+      description: Step-by-step instructions for migrating from previous version
+      placeholder: |
+        **From v1.x to v2.x:**
+        1. Update code to use DTO methods instead of array access
+        2. Replace `$result['status']` with `$result->isApproved()`
+        3. Replace `$result['reason']` with `$result->reason`
     validations:
       required: false
 
@@ -123,7 +137,7 @@ body:
       label: 📊 Technical Details
       description: Technical statistics and metrics
       placeholder: |
-        - Test Coverage: 89 tests (28 unit + 61 integration)
+        - Test Coverage: 90+ tests (unit + integration)
         - Performance: 350-400ms average API response time
         - Static Analysis: PHPStan level 6 with 0 errors
     validations:
@@ -136,7 +150,8 @@ body:
       description: Links to relevant documentation
       placeholder: |
         - [Integration Testing Guide](docs/INTEGRATION_TESTING.md)
-        - [API Documentation](docs/API.md)
+        - [API Responses](docs/API_RESPONSES.md)
+        - [Blocklists Guide](docs/BLOCKLISTS.md)
     validations:
       required: false
 
@@ -147,7 +162,7 @@ body:
       description: Specific steps users need to take to upgrade
       placeholder: |
         1. Run `composer update gowelle/azure-moderator`
-        2. Update configuration file if needed
+        2. Update code to use DTO syntax (see Migration Guide)
         3. Clear cache: `php artisan config:clear`
     validations:
       required: false
@@ -177,5 +192,7 @@ body:
           required: true
         - label: Documentation updated
           required: true
+        - label: Migration guide included (for breaking changes)
+          required: false
         - label: Git tag created
           required: true

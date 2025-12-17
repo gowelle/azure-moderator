@@ -199,10 +199,10 @@ This guide helps you diagnose and resolve common issues with the Azure Content S
    ```php
    $result = AzureModerator::moderate($content, $rating);
    
-   if ($result['status'] === 'flagged') {
+   if ($result->isFlagged()) {
        Log::info('Content flagged', [
            'content' => $content,
-           'reason' => $result['reason'],
+           'reason' => $result->reason,
            'rating' => $rating,
        ]);
    }
@@ -326,7 +326,8 @@ $result = AzureModerator::moderate($content, $rating);
 Log::debug('Moderation result', [
     'content' => Str::limit($content, 100),
     'rating' => $rating,
-    'result' => $result,
+    'approved' => $result->isApproved(),
+    'reason' => $result->reason,
 ]);
 ```
 

@@ -6,13 +6,13 @@ We release patches for security vulnerabilities for the following versions:
 
 | Version | Supported          | Notes                                    |
 | ------- | ------------------ | ---------------------------------------- |
-| 1.3.x   | :white_check_mark: | Current stable release (recommended)     |
-| 1.2.x   | :white_check_mark: | Security fixes only                      |
-| 1.1.x   | :white_check_mark: | Security fixes only                      |
-| 1.0.x   | :warning:          | End of life - please upgrade to 1.3.x    |
-| < 1.0   | :x:                | Not supported                            |
+| 2.0.x   | :white_check_mark: | Current stable release (recommended)     |
+| 1.3.x   | :white_check_mark: | Security fixes only                      |
+| 1.2.x   | :warning:          | End of life - please upgrade to 2.0.x    |
+| 1.1.x   | :x:                | Not supported                            |
+| < 1.1   | :x:                | Not supported                            |
 
-**Recommendation:** Always use the latest 1.3.x release for the best security, performance, and features.
+**Recommendation:** Always use the latest 2.0.x release for the best security, performance, and features.
 
 ## Security Best Practices
 
@@ -89,7 +89,7 @@ The `fail_on_api_error` configuration controls security vs. user experience trad
 
 ### Testing and Quality Assurance
 - **PHPStan Level 6:** Static analysis catches type errors and potential bugs
-- **Comprehensive Test Suite:** 89 tests (28 unit + 61 integration/performance)
+- **Comprehensive Test Suite:** 90+ tests (unit + integration/performance)
 - **Integration Tests:** Validate real Azure API interactions
 - **Mutation Testing:** Infection PHP ensures test quality (80% MSI threshold)
 - **CI/CD Pipeline:** Automated testing on every commit
@@ -148,7 +148,7 @@ When we receive a security bug report, we will:
 1. **Acknowledge receipt** within 48 hours
 2. **Confirm the problem** and determine the affected versions within 5 business days
 3. **Audit code** to find any potential similar problems
-4. **Prepare fixes** for all still-maintained versions (1.1.x, 1.2.x, 1.3.x)
+4. **Prepare fixes** for all still-maintained versions (1.3.x, 2.0.x)
 5. **Release security patches** as soon as possible (target: within 14 days for critical issues)
 6. **Publish security advisory** on GitHub with CVE (if applicable)
 7. **Credit reporter** in the security advisory (unless anonymity is requested)
@@ -178,5 +178,5 @@ If you have suggestions on how this process could be improved, please submit a p
 
 ---
 
-**Last Updated:** 2025-12-17  
-**Policy Version:** 1.1
+**Last Updated:** 2025-12-18  
+**Policy Version:** 1.2
