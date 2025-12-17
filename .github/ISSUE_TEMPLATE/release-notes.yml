@@ -1,0 +1,181 @@
+name: 🚀 Release Notes
+description: Template for creating GitHub release notes
+title: "Release v[VERSION]"
+labels: ["release"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Release Information
+        Use this template to create comprehensive release notes for azure-moderator.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version Number
+      description: Semantic version number (e.g., 1.3.0)
+      placeholder: "1.3.0"
+    validations:
+      required: true
+
+  - type: input
+    id: release-date
+    attributes:
+      label: Release Date
+      description: Date of the release (YYYY-MM-DD)
+      placeholder: "2025-12-17"
+    validations:
+      required: true
+
+  - type: textarea
+    id: highlights
+    attributes:
+      label: 🎉 Release Highlights
+      description: Brief summary of the most important changes in this release
+      placeholder: |
+        - Major feature additions
+        - Significant improvements
+        - Important fixes
+    validations:
+      required: true
+
+  - type: textarea
+    id: added
+    attributes:
+      label: ✨ Added
+      description: New features, capabilities, or functionality
+      placeholder: |
+        - New API endpoints
+        - New configuration options
+        - New documentation
+    validations:
+      required: false
+
+  - type: textarea
+    id: changed
+    attributes:
+      label: 🔄 Changed
+      description: Changes to existing functionality
+      placeholder: |
+        - Updated dependencies
+        - Improved performance
+        - Enhanced error messages
+    validations:
+      required: false
+
+  - type: textarea
+    id: fixed
+    attributes:
+      label: 🐛 Fixed
+      description: Bug fixes and corrections
+      placeholder: |
+        - Fixed issue with...
+        - Resolved bug in...
+        - Corrected behavior of...
+    validations:
+      required: false
+
+  - type: textarea
+    id: deprecated
+    attributes:
+      label: 🗑️ Deprecated
+      description: Features that are deprecated but still available
+      placeholder: |
+        - Method X is deprecated, use Y instead
+    validations:
+      required: false
+
+  - type: textarea
+    id: removed
+    attributes:
+      label: ❌ Removed
+      description: Features that have been removed
+      placeholder: |
+        - Removed deprecated method X
+    validations:
+      required: false
+
+  - type: textarea
+    id: security
+    attributes:
+      label: 🔒 Security
+      description: Security improvements and vulnerability fixes
+      placeholder: |
+        - Fixed security vulnerability in...
+        - Updated dependency X to address CVE-YYYY-XXXXX
+    validations:
+      required: false
+
+  - type: textarea
+    id: breaking-changes
+    attributes:
+      label: ⚠️ Breaking Changes
+      description: Important changes that require user action
+      placeholder: |
+        - Configuration key X has been renamed to Y
+        - Method signature changed for Z
+    validations:
+      required: false
+
+  - type: textarea
+    id: technical-details
+    attributes:
+      label: 📊 Technical Details
+      description: Technical statistics and metrics
+      placeholder: |
+        - Test Coverage: 89 tests (28 unit + 61 integration)
+        - Performance: 350-400ms average API response time
+        - Static Analysis: PHPStan level 6 with 0 errors
+    validations:
+      required: false
+
+  - type: textarea
+    id: documentation
+    attributes:
+      label: 📚 Documentation
+      description: Links to relevant documentation
+      placeholder: |
+        - [Integration Testing Guide](docs/INTEGRATION_TESTING.md)
+        - [API Documentation](docs/API.md)
+    validations:
+      required: false
+
+  - type: textarea
+    id: upgrade-instructions
+    attributes:
+      label: ⬆️ Upgrade Instructions
+      description: Specific steps users need to take to upgrade
+      placeholder: |
+        1. Run `composer update gowelle/azure-moderator`
+        2. Update configuration file if needed
+        3. Clear cache: `php artisan config:clear`
+    validations:
+      required: false
+
+  - type: textarea
+    id: contributors
+    attributes:
+      label: 🙏 Contributors
+      description: Thank contributors to this release
+      placeholder: |
+        - @username1
+        - @username2
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Release Checklist
+      description: Ensure all release tasks are completed
+      options:
+        - label: CHANGELOG.md updated
+          required: true
+        - label: Version number bumped in composer.json
+          required: true
+        - label: All tests passing
+          required: true
+        - label: Documentation updated
+          required: true
+        - label: Git tag created
+          required: true
