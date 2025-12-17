@@ -104,7 +104,7 @@ Feature requests are welcome! Please provide:
 
 ## Security Vulnerabilities
 
-If you discover a security vulnerability, please send an email to [security@gowelle.com](mailto:security@gowelle.com) instead of using the issue tracker.
+If you discover a security vulnerability, please send an email to [gowelle.john@icloud.com](mailto:gowelle.john@icloud.com) instead of using the issue tracker. See [SECURITY.md](SECURITY.md) for more details.
 
 ---
 
