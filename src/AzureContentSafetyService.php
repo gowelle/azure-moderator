@@ -2,15 +2,15 @@
 
 namespace Gowelle\AzureModerator;
 
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Http\Client\Response;
+use Gowelle\AzureModerator\Data\ModerationResult;
 use Gowelle\AzureModerator\Data\ModeratorConfig;
 use Gowelle\AzureModerator\Enums\ContentCategory;
 use Gowelle\AzureModerator\Enums\ModerationStatus;
-use Gowelle\AzureModerator\Data\ModerationResult;
-use Illuminate\Http\Client\RequestException;
 use Gowelle\AzureModerator\Exceptions\ModerationException;
+use Illuminate\Http\Client\RequestException;
+use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Azure Content Safety Service for content moderation
@@ -24,8 +24,11 @@ use Gowelle\AzureModerator\Exceptions\ModerationException;
 class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\AzureContentSafetyServiceContract
 {
     private const API_VERSION = '2024-09-01';
+
     private const RETRY_ATTEMPTS = 3;
+
     private const RETRY_DELAY_MS = 100;
+
     private const RETRY_STATUS_CODES = [429, 500, 503];
 
     protected ModeratorConfig $config;
@@ -42,31 +45,29 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
      * combines it with a user rating to determine if the content should be
      * approved or flagged.
      *
-     * @param string $text The text content to analyze
-     * @param float $rating User rating (0-5)
-     * @param array|null $categories Optional categories to analyze, defaults to all
+     * @param  string  $text  The text content to analyze
+     * @param  float  $rating  User rating (0-5)
+     * @param  array<string>|null  $categories  Optional categories to analyze, defaults to all
      * @return array{status: string, reason: string|null} Moderation result
-     * @throws InvalidArgumentException When input validation fails
-     * @throws ModerationException When API request fails
      */
     public function moderate(
-        string $text, 
-        float $rating, 
+        string $text,
+        float $rating,
         ?array $categories = null
     ): array {
         try {
             $this->validateRequest($text, $rating);
-            
+
             $response = $this->makeApiRequest(
-                text: $text, 
+                text: $text,
                 categories: $categories ?? ContentCategory::defaultCategories()
             );
-            
+
             $scores = $response->json()['categoriesAnalysis'] ?? [];
-            
+
             $analysis = $this->analyzeScores($scores);
-            
-            if (!$analysis['hasHighRisk'] && $rating >= $this->config->lowRatingThreshold) {
+
+            if (! $analysis['hasHighRisk'] && $rating >= $this->config->lowRatingThreshold) {
                 return (new ModerationResult(
                     status: ModerationStatus::APPROVED,
                 ))->toArray();
@@ -82,12 +83,12 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
                 'error' => $e->getMessage(),
                 'endpoint' => $this->config->endpoint,
                 'text_length' => strlen($text),
-                'rating' => $rating
+                'rating' => $rating,
             ]);
 
             return (new ModerationResult(
-                status: $rating >= $this->config->lowRatingThreshold 
-                    ? ModerationStatus::APPROVED 
+                status: $rating >= $this->config->lowRatingThreshold
+                    ? ModerationStatus::APPROVED
                     : ModerationStatus::FLAGGED,
                 reason: $rating >= $this->config->lowRatingThreshold ? null : 'low_rating'
             ))->toArray();
@@ -99,19 +100,17 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
      *
      * Handles retrying of failed requests and proper error handling.
      *
-     * @param string $text Content to analyze
-     * @param array $categories Categories to check
-     * @return Response
-     * @throws ModerationException When request fails
+     * @param  string  $text  Content to analyze
+     * @param  array<string>  $categories  Categories to check
      */
     protected function makeApiRequest(string $text, array $categories): Response
     {
-        $endpoint = rtrim($this->config->endpoint, '/') 
-            . '/contentsafety/text:analyze?api-version=' . self::API_VERSION;
-        
+        $endpoint = rtrim($this->config->endpoint, '/')
+            .'/contentsafety/text:analyze?api-version='.self::API_VERSION;
+
         try {
             $response = Http::retry(self::RETRY_ATTEMPTS, self::RETRY_DELAY_MS, function ($exception) {
-                return $exception instanceof RequestException && 
+                return $exception instanceof RequestException &&
                        in_array($exception->response->status(), self::RETRY_STATUS_CODES);
             })->withHeaders([
                 'Ocp-Apim-Subscription-Key' => $this->config->apiKey,
@@ -145,7 +144,7 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
     /**
      * Log failed API responses
      *
-     * @param Response $response The API response
+     * @param  Response  $response  The API response
      */
     protected function logApiResponse(Response $response): void
     {
@@ -153,7 +152,7 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
             Log::warning('Azure API request failed', [
                 'status' => $response->status(),
                 'body' => $response->json(),
-                'endpoint' => $this->config->endpoint
+                'endpoint' => $this->config->endpoint,
             ]);
         }
     }
@@ -161,14 +160,14 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
     /**
      * Format error message from API response
      *
-     * @param Response $response The API response
+     * @param  Response  $response  The API response
      * @return string Formatted error message
      */
     protected function getErrorMessage(Response $response): string
     {
         $body = $response->json();
         $error = $body['error'] ?? [];
-        
+
         return sprintf(
             'Azure API request failed (HTTP %d): [%s] %s',
             $response->status(),
@@ -180,9 +179,8 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
     /**
      * Validate request parameters
      *
-     * @param string $text Content to validate
-     * @param float $rating Rating to validate
-     * @throws InvalidArgumentException When validation fails
+     * @param  string  $text  Content to validate
+     * @param  float  $rating  Rating to validate
      */
     protected function validateRequest(string $text, float $rating): void
     {
@@ -204,11 +202,10 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
      * On API failures, returns an approved status by default (graceful degradation).
      * This behavior ensures users aren't blocked during Azure API outages.
      *
-     * @param string $image Either a URL to the image or base64-encoded image data
-     * @param array|null $categories Optional categories to analyze, defaults to all
-     * @param string $encoding Either 'url' (default) or 'base64' to indicate image format
-     * @return array{status: string, reason: string|null, scores: array|null} Moderation result
-     * @throws InvalidArgumentException When input validation fails
+     * @param  string  $image  Either a URL to the image or base64-encoded image data
+     * @param  array<string>|null  $categories  Optional categories to analyze, defaults to all
+     * @param  string  $encoding  Either 'url' (default) or 'base64' to indicate image format
+     * @return array{status: string, reason: string|null, scores: array<array{category: string, severity: int}>|null} Moderation result
      */
     public function moderateImage(
         string $image,
@@ -240,7 +237,7 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
             Log::error('Azure image moderation failed', [
                 'error' => $e->getMessage(),
                 'endpoint' => $this->config->endpoint,
-                'encoding' => $encoding
+                'encoding' => $encoding,
             ]);
 
             // Return approved status on API failure (graceful degradation)
@@ -254,16 +251,14 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
     /**
      * Make an API request to Azure Content Safety for image analysis
      *
-     * @param string $image Image URL or base64 data
-     * @param string $encoding Image encoding type
-     * @param array $categories Categories to check
-     * @return Response
-     * @throws ModerationException When request fails
+     * @param  string  $image  Image URL or base64 data
+     * @param  string  $encoding  Image encoding type
+     * @param  array<string>  $categories  Categories to check
      */
     protected function makeImageApiRequest(string $image, string $encoding, array $categories): Response
     {
         $endpoint = rtrim($this->config->endpoint, '/')
-            . '/contentsafety/image:analyze?api-version=' . self::API_VERSION;
+            .'/contentsafety/image:analyze?api-version='.self::API_VERSION;
 
         $payload = [
             'categories' => $categories,
@@ -308,9 +303,8 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
     /**
      * Validate image request parameters
      *
-     * @param string $image Image to validate
-     * @param string $encoding Encoding type
-     * @throws InvalidArgumentException When validation fails
+     * @param  string  $image  Image to validate
+     * @param  string  $encoding  Encoding type
      */
     protected function validateImageRequest(string $image, string $encoding): void
     {
@@ -318,11 +312,11 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
             throw new \InvalidArgumentException('Image cannot be empty');
         }
 
-        if (!in_array($encoding, ['url', 'base64'])) {
+        if (! in_array($encoding, ['url', 'base64'])) {
             throw new \InvalidArgumentException('Encoding must be either "url" or "base64"');
         }
 
-        if ($encoding === 'url' && !filter_var($image, FILTER_VALIDATE_URL)) {
+        if ($encoding === 'url' && ! filter_var($image, FILTER_VALIDATE_URL)) {
             throw new \InvalidArgumentException('Invalid image URL provided');
         }
 
@@ -340,7 +334,7 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
      * Determines if content has high risk based on severity thresholds
      * and provides reason for flagging if applicable.
      *
-     * @param array<array{category: string, severity: int}> $scores Category scores from API
+     * @param  array<array{category: string, severity: int}>  $scores  Category scores from API
      * @return array{hasHighRisk: bool, reason: string} Analysis result
      */
     protected function analyzeScores(array $scores): array

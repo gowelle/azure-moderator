@@ -18,9 +18,6 @@ class AzureContentSafetyServiceProvider extends PackageServiceProvider
 {
     /**
      * Configure the package settings and features
-     *
-     * @param Package $package
-     * @return void
      */
     public function configurePackage(Package $package): void
     {
@@ -30,7 +27,7 @@ class AzureContentSafetyServiceProvider extends PackageServiceProvider
             ->hasCommand(TestImageModerationCommand::class)
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
-                    ->publishConfigFile('azure-moderator')
+                    ->publishConfigFile()
                     ->copyAndRegisterServiceProviderInApp();
             });
     }

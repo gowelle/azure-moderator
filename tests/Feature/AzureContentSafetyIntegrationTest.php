@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use Orchestra\Testbench\TestCase;
 use Gowelle\AzureModerator\AzureContentSafetyServiceProvider;
 use Gowelle\AzureModerator\Contracts\AzureContentSafetyServiceContract;
+use Orchestra\Testbench\TestCase;
 
 class AzureContentSafetyIntegrationTest extends TestCase
 {
@@ -19,7 +19,7 @@ class AzureContentSafetyIntegrationTest extends TestCase
     {
         $app['config']->set('azure-moderator', [
             'endpoint' => env('AZURE_CONTENT_SAFETY_ENDPOINT'),
-            'api_key' => env('AZURE_CONTENT_SAFETY_API_KEY')
+            'api_key' => env('AZURE_CONTENT_SAFETY_API_KEY'),
         ]);
     }
 
@@ -27,7 +27,7 @@ class AzureContentSafetyIntegrationTest extends TestCase
     public function it_can_connect_to_azure_api()
     {
         // Skip test if no credentials
-        if (!env('AZURE_CONTENT_SAFETY_ENDPOINT') || !env('AZURE_CONTENT_SAFETY_API_KEY')) {
+        if (! env('AZURE_CONTENT_SAFETY_ENDPOINT') || ! env('AZURE_CONTENT_SAFETY_API_KEY')) {
             $this->markTestSkipped('Azure credentials not available.');
         }
 

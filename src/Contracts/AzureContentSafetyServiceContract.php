@@ -28,10 +28,11 @@ interface AzureContentSafetyServiceContract
      * combines it with a user rating to determine if the content should be
      * approved or flagged for review.
      *
-     * @param string $text The text content to analyze (must not be empty)
-     * @param float $rating User rating between 0 and 5 (inclusive)
-     * @param array|null $categories Optional categories to analyze, defaults to all categories
+     * @param  string  $text  The text content to analyze (must not be empty)
+     * @param  float  $rating  User rating between 0 and 5 (inclusive)
+     * @param  array<string>|null  $categories  Optional categories to analyze, defaults to all categories
      * @return array{status: string, reason: string|null} Returns an array with moderation status and optional reason
+     *
      * @throws \Gowelle\AzureModerator\Exceptions\ModerationException When API request fails
      * @throws \InvalidArgumentException When input validation fails
      *
@@ -58,10 +59,11 @@ interface AzureContentSafetyServiceContract
      * On API failures, returns an approved status by default (graceful degradation).
      * This ensures users aren't blocked during Azure API outages.
      *
-     * @param string $image Either a URL to the image or base64-encoded image data
-     * @param array|null $categories Optional categories to analyze, defaults to all categories
-     * @param string $encoding Either 'url' (default) or 'base64' to indicate image format
-     * @return array{status: string, reason: string|null, scores: array|null} Returns an array with moderation status, optional reason, and severity scores
+     * @param  string  $image  Either a URL to the image or base64-encoded image data
+     * @param  array<string>|null  $categories  Optional categories to analyze, defaults to all categories
+     * @param  string  $encoding  Either 'url' (default) or 'base64' to indicate image format
+     * @return array{status: string, reason: string|null, scores: array<array{category: string, severity: int}>|null} Returns an array with moderation status, optional reason, and severity scores
+     *
      * @throws \InvalidArgumentException When input validation fails
      *
      * Example response (success):

@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Gowelle\AzureModerator\Facades\AzureModerator;
-use Gowelle\AzureModerator\Exceptions\ModerationException;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
@@ -93,6 +92,7 @@ class ImageModerationTest extends TestCase
         // Verify the request payload
         Http::assertSent(function ($request) use ($base64Image) {
             $data = $request->data();
+
             return isset($data['image']['content']) &&
                    $data['image']['content'] === $base64Image;
         });
@@ -117,6 +117,7 @@ class ImageModerationTest extends TestCase
 
         Http::assertSent(function ($request) use ($imageUrl) {
             $data = $request->data();
+
             return isset($data['image']['url']) &&
                    $data['image']['url'] === $imageUrl;
         });
@@ -143,6 +144,7 @@ class ImageModerationTest extends TestCase
 
         Http::assertSent(function ($request) {
             $data = $request->data();
+
             return $data['categories'] === ['Sexual', 'Violence'];
         });
     }

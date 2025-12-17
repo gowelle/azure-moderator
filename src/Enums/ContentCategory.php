@@ -10,17 +10,17 @@ namespace Gowelle\AzureModerator\Enums;
  *
  * @see https://learn.microsoft.com/en-us/azure/ai-services/content-safety/concepts/harm-categories
  */
-enum ContentCategory: string 
+enum ContentCategory: string
 {
     /** Content expressing hate or discrimination */
     case HATE = 'Hate';
-    
+
     /** Content related to self-harm or suicide */
     case SELF_HARM = 'SelfHarm';
-    
+
     /** Sexual or adult content */
     case SEXUAL = 'Sexual';
-    
+
     /** Violent or graphic content */
     case VIOLENCE = 'Violence';
 

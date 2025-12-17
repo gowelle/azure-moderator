@@ -2,9 +2,9 @@
 
 namespace Gowelle\AzureModerator\Commands;
 
-use Illuminate\Console\Command;
-use Gowelle\AzureModerator\Facades\AzureModerator;
 use Gowelle\AzureModerator\Exceptions\ModerationException;
+use Gowelle\AzureModerator\Facades\AzureModerator;
+use Illuminate\Console\Command;
 
 /**
  * Artisan command for testing image moderation
@@ -24,7 +24,7 @@ class TestImageModerationCommand extends Command
      * @var string
      */
     protected $signature = 'azure-moderator:test-image
-                            {url : The URL of the image to test}
+                            {image : The URL of the image to test}
                             {--categories= : Comma-separated list of categories to check (Hate,SelfHarm,Sexual,Violence)}';
 
     /**
@@ -36,17 +36,16 @@ class TestImageModerationCommand extends Command
 
     /**
      * Execute the console command
-     *
-     * @return int
      */
     public function handle(): int
     {
-        $url = $this->argument('url');
+        $url = $this->argument('image');
         $categoriesOption = $this->option('categories');
 
         // Validate URL
-        if (!filter_var($url, FILTER_VALIDATE_URL)) {
+        if (! filter_var($url, FILTER_VALIDATE_URL)) {
             $this->error('Invalid URL provided.');
+
             return self::FAILURE;
         }
 
@@ -57,7 +56,7 @@ class TestImageModerationCommand extends Command
         $categories = null;
         if ($categoriesOption) {
             $categories = array_map('trim', explode(',', $categoriesOption));
-            $this->line('Categories: ' . implode(', ', $categories));
+            $this->line('Categories: '.implode(', ', $categories));
         } else {
             $this->line('Categories: All (Hate, SelfHarm, Sexual, Violence)');
         }
@@ -93,6 +92,7 @@ class TestImageModerationCommand extends Command
         } catch (\Exception $e) {
             $this->error('Unexpected error occurred!');
             $this->line("Error: {$e->getMessage()}");
+
             return self::FAILURE;
         }
     }
@@ -100,13 +100,18 @@ class TestImageModerationCommand extends Command
     /**
      * Display the moderation results
      *
-     * @param array $result The moderation result
+     * @param  array{status: string, reason: string|null, scores: array<array{category: string, severity: int}>|null}  $result  The moderation result
      */
     protected function displayResults(array $result): void
     {
         $status = $result['status'];
         $reason = $result['reason'] ?? null;
         $scores = $result['scores'] ?? [];
+
+        // Display header
+        $this->newLine();
+        $this->line('Image Moderation Result');
+        $this->line(str_repeat('=', 30));
 
         // Display status with color
         if ($status === 'approved') {
@@ -119,17 +124,17 @@ class TestImageModerationCommand extends Command
         }
 
         // Display severity scores
-        if (!empty($scores)) {
+        if (! empty($scores)) {
             $this->newLine();
             $this->line('Severity Scores:');
 
             $tableData = [];
             foreach ($scores as $score) {
-                $category = $score['category'] ?? 'Unknown';
-                $severity = $score['severity'] ?? 0;
+                $category = $score['category'];
+                $severity = $score['severity'];
 
                 // Color code based on severity
-                $severityDisplay = match(true) {
+                $severityDisplay = match (true) {
                     $severity >= 6 => "<fg=red>{$severity} (High)</>",
                     $severity >= 3 => "<fg=yellow>{$severity} (Medium)</>",
                     default => "<fg=green>{$severity} (Low)</>"
@@ -143,6 +148,6 @@ class TestImageModerationCommand extends Command
 
         $this->newLine();
         $this->line('Configuration:');
-        $this->line('High Severity Threshold: ' . config('azure-moderator.high_severity_threshold', 3));
+        $this->line('High Severity Threshold: '.config('azure-moderator.high_severity_threshold', 3));
     }
 }

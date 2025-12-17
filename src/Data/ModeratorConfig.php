@@ -13,11 +13,11 @@ class ModeratorConfig
     /**
      * Create a new ModeratorConfig instance
      *
-     * @param string $endpoint Azure Content Safety API endpoint
-     * @param string $apiKey Azure Content Safety API key
-     * @param int $lowRatingThreshold Threshold for flagging low-rated content (0-5)
-     * @param int $highSeverityThreshold Threshold for flagging high-risk content (0-7)
-     * @param bool $failOnApiError Whether to fail validation when API is unavailable
+     * @param  string  $endpoint  Azure Content Safety API endpoint
+     * @param  string  $apiKey  Azure Content Safety API key
+     * @param  int  $lowRatingThreshold  Threshold for flagging low-rated content (0-5)
+     * @param  int  $highSeverityThreshold  Threshold for flagging high-risk content (0-7)
+     * @param  bool  $failOnApiError  Whether to fail validation when API is unavailable
      */
     public function __construct(
         public readonly string $endpoint,
@@ -29,8 +29,6 @@ class ModeratorConfig
 
     /**
      * Create a configuration instance from Laravel config values
-     *
-     * @return self
      */
     public static function fromConfig(): self
     {

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" 
+         bootstrap="vendor/autoload.php" 
+         colors="true"
+         failOnWarning="true"
+         failOnRisky="true">
+  <testsuites>
+    <testsuite name="Integration">
+      <directory suffix="Test.php">./tests/Integration</directory>
+    </testsuite>
+    <testsuite name="Performance">
+      <directory suffix="Benchmark.php">./tests/Performance</directory>
+    </testsuite>
+  </testsuites>
+  <php>
+    <env name="APP_ENV" value="testing"/>
+    <!-- Azure Content Safety API credentials - required for integration tests -->
+    <!-- Set these environment variables before running integration tests -->
+    <env name="AZURE_CONTENT_SAFETY_ENDPOINT" value="${AZURE_CONTENT_SAFETY_ENDPOINT}"/>
+    <env name="AZURE_CONTENT_SAFETY_API_KEY" value="${AZURE_CONTENT_SAFETY_API_KEY}"/>
+    <!-- Optional: Override thresholds for testing -->
+    <env name="AZURE_CONTENT_SAFETY_LOW_RATING_THRESHOLD" value="2"/>
+    <env name="AZURE_CONTENT_SAFETY_HIGH_SEVERITY_THRESHOLD" value="3"/>
+    <env name="AZURE_MODERATOR_FAIL_ON_ERROR" value="false"/>
+  </php>
+  <source>
+    <include>
+      <directory suffix=".php">src/</directory>
+    </include>
+  </source>
+</phpunit>

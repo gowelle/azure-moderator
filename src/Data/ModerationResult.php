@@ -15,8 +15,8 @@ class ModerationResult
     /**
      * Create a new moderation result
      *
-     * @param ModerationStatus $status The moderation status
-     * @param string|null $reason Optional reason for flagging
+     * @param  ModerationStatus  $status  The moderation status
+     * @param  string|null  $reason  Optional reason for flagging
      */
     public function __construct(
         public readonly ModerationStatus $status,

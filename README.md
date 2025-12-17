@@ -1,6 +1,7 @@
 # Azure Content Safety for Laravel
 
 [![Tests](https://github.com/gowelle/azure-moderator/actions/workflows/test.yml/badge.svg)](https://github.com/gowelle/azure-moderator/actions/workflows/test.yml)
+[![PHPStan Level 6](https://img.shields.io/badge/PHPStan-level%206-brightgreen.svg)](https://phpstan.org/)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/gowelle/azure-moderator.svg)](https://packagist.org/packages/gowelle/azure-moderator)
 [![Total Downloads](https://img.shields.io/packagist/dt/gowelle/azure-moderator.svg)](https://packagist.org/packages/gowelle/azure-moderator)
 
@@ -16,6 +17,10 @@ A Laravel package for content moderation using Azure Content Safety API. This pa
 - Laravel validation rules for images
 - Artisan command for testing
 - Retry handling for API failures
+- **Comprehensive test suite (89 tests)**
+- **Integration tests with real Azure API**
+- **PHPStan level 6 static analysis**
+- **Performance benchmarks**
 - Laravel-native configuration
 - Extensive logging
 
@@ -232,9 +237,90 @@ php artisan azure-moderator:test-image https://example.com/image.jpg --categorie
 
 ## Testing
 
+This package includes a comprehensive test suite with unit tests, integration tests, and performance benchmarks.
+
+### Running Tests
+
 ```bash
+# Run unit tests
 composer test
+
+# Run integration tests (requires Azure credentials)
+composer test:integration
+
+# Run performance benchmarks
+composer test:performance
+
+# Run all tests
+composer test:all
+
+# Generate coverage report
+composer test-coverage
 ```
+
+### Integration Tests
+
+Integration tests validate the package against the real Azure Content Safety API. To run them:
+
+1. Copy the example environment file:
+   ```bash
+   cp .env.integration.example .env.integration
+   ```
+
+2. Add your Azure credentials to `.env.integration`:
+   ```env
+   AZURE_CONTENT_SAFETY_ENDPOINT=https://your-resource.cognitiveservices.azure.com
+   AZURE_CONTENT_SAFETY_API_KEY=your-api-key
+   ```
+
+3. Run integration tests:
+   ```bash
+   composer test:integration
+   ```
+
+**Test Coverage:**
+- 28 unit tests
+- 50 integration tests (Azure API)
+- 11 performance benchmarks
+- **Total: 89 tests with 100% pass rate**
+
+See [Integration Testing Guide](docs/INTEGRATION_TESTING.md) for detailed documentation.
+
+### Quality Tools
+
+```bash
+# Run PHPStan static analysis (level 6)
+composer analyse
+
+# Run mutation testing
+composer mutate
+
+# Check code style
+composer format
+
+# Run all quality checks
+composer quality
+```
+
+### CI/CD
+
+GitHub Actions automatically runs:
+- Unit tests (PHP 8.2 & 8.3)
+- Integration tests (when secrets are configured)
+- PHPStan static analysis
+- Code style checks
+
+To enable integration tests in CI, add these secrets to your repository:
+- `AZURE_CONTENT_SAFETY_ENDPOINT`
+- `AZURE_CONTENT_SAFETY_API_KEY`
+
+### Documentation
+
+- [Integration Testing Guide](docs/INTEGRATION_TESTING.md)
+- [Performance Testing Guide](docs/PERFORMANCE_TESTING.md)
+- [Troubleshooting Guide](docs/TROUBLESHOOTING.md)
+- [API Response Examples](docs/API_RESPONSES.md)
+- [Roadmap](docs/ROADMAP.md)
 
 ## Changelog
 

@@ -24,10 +24,10 @@ class ModerationException extends \Exception
     /**
      * Create a new ModerationException instance
      *
-     * @param string $message Error message describing what went wrong
-     * @param string|null $endpoint The API endpoint that was called
-     * @param int|null $statusCode HTTP status code from the response
-     * @param \Throwable|null $previous Previous exception if this was caused by another exception
+     * @param  string  $message  Error message describing what went wrong
+     * @param  string|null  $endpoint  The API endpoint that was called
+     * @param  int|null  $statusCode  HTTP status code from the response
+     * @param  \Throwable|null  $previous  Previous exception if this was caused by another exception
      */
     public function __construct(
         string $message,

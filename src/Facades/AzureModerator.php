@@ -35,11 +35,9 @@ class AzureModerator extends Facade
 {
     /**
      * Get the registered name of the component
-     *
-     * @return string
      */
     protected static function getFacadeAccessor(): string
     {
-        return 'gowelle.azure-moderator';
+        return \Gowelle\AzureModerator\Contracts\AzureContentSafetyServiceContract::class;
     }
 }

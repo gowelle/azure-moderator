@@ -12,18 +12,16 @@ enum ModerationStatus: string
 {
     /** Content passed moderation checks */
     case APPROVED = 'approved';
-    
+
     /** Content needs review or was flagged */
     case FLAGGED = 'flagged';
 
     /**
      * Get human-readable label for the status
-     *
-     * @return string
      */
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::APPROVED => 'Approved',
             self::FLAGGED => 'Flagged',
         };

@@ -39,7 +39,7 @@ class SafeImageValidationTest extends TestCase
 
         $validator = Validator::make(
             ['avatar' => $file],
-            ['avatar' => ['required', new SafeImage()]]
+            ['avatar' => ['required', new SafeImage]]
         );
 
         expect($validator->passes())->toBeTrue();
@@ -63,7 +63,7 @@ class SafeImageValidationTest extends TestCase
 
         $validator = Validator::make(
             ['avatar' => $file],
-            ['avatar' => ['required', new SafeImage()]]
+            ['avatar' => ['required', new SafeImage]]
         );
 
         expect($validator->fails())->toBeTrue();
@@ -94,6 +94,7 @@ class SafeImageValidationTest extends TestCase
 
         Http::assertSent(function ($request) {
             $data = $request->data();
+
             return $data['categories'] === ['Sexual', 'Violence'];
         });
     }
@@ -103,7 +104,7 @@ class SafeImageValidationTest extends TestCase
     {
         $validator = Validator::make(
             ['avatar' => 'not-a-file'],
-            ['avatar' => ['required', new SafeImage()]]
+            ['avatar' => ['required', new SafeImage]]
         );
 
         expect($validator->fails())->toBeTrue();
@@ -129,15 +130,16 @@ class SafeImageValidationTest extends TestCase
 
         $validator = Validator::make(
             ['avatar' => $file],
-            ['avatar' => ['required', new SafeImage()]]
+            ['avatar' => ['required', new SafeImage]]
         );
 
         $validator->passes();
 
         Http::assertSent(function ($request) {
             $data = $request->data();
+
             return isset($data['image']['content']) &&
-                   !empty($data['image']['content']);
+                   ! empty($data['image']['content']);
         });
     }
 
@@ -159,7 +161,7 @@ class SafeImageValidationTest extends TestCase
 
         $validator = Validator::make(
             ['avatar' => $file],
-            ['avatar' => ['required', new SafeImage()]]
+            ['avatar' => ['required', new SafeImage]]
         );
 
         // By default, the rule doesn't fail on API errors (graceful degradation)
@@ -184,7 +186,7 @@ class SafeImageValidationTest extends TestCase
 
         $validator = Validator::make(
             ['avatar' => $file],
-            ['avatar' => ['required', new SafeImage()]]
+            ['avatar' => ['required', new SafeImage]]
         );
 
         // When fail_on_api_error is true, validation should fail
@@ -201,7 +203,7 @@ class SafeImageValidationTest extends TestCase
         // Mock file_get_contents to return false
         $validator = Validator::make(
             ['avatar' => 'not-a-real-file'],
-            ['avatar' => ['required', new SafeImage()]]
+            ['avatar' => ['required', new SafeImage]]
         );
 
         expect($validator->fails())->toBeTrue();

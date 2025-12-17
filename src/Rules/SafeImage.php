@@ -3,9 +3,9 @@
 namespace Gowelle\AzureModerator\Rules;
 
 use Closure;
-use Illuminate\Contracts\Validation\ValidationRule;
-use Gowelle\AzureModerator\Facades\AzureModerator;
 use Gowelle\AzureModerator\Exceptions\ModerationException;
+use Gowelle\AzureModerator\Facades\AzureModerator;
+use Illuminate\Contracts\Validation\ValidationRule;
 
 /**
  * Laravel validation rule for safe image content
@@ -32,7 +32,7 @@ class SafeImage implements ValidationRule
     /**
      * Create a new rule instance
      *
-     * @param array|null $categories Optional categories to check, defaults to all
+     * @param  array<string>|null  $categories  Optional categories to check, defaults to all
      */
     public function __construct(
         protected ?array $categories = null
@@ -41,33 +41,36 @@ class SafeImage implements ValidationRule
     /**
      * Run the validation rule
      *
-     * @param string $attribute The attribute being validated
-     * @param mixed $value The value being validated (should be UploadedFile)
-     * @param Closure $fail The failure callback
+     * @param  string  $attribute  The attribute being validated
+     * @param  mixed  $value  The value being validated (should be UploadedFile)
+     * @param  Closure  $fail  The failure callback
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         // Check if value is an uploaded file
-        if (!$value instanceof \Illuminate\Http\UploadedFile) {
+        if (! $value instanceof \Illuminate\Http\UploadedFile) {
             $fail('The :attribute must be an uploaded file.');
+
             return;
         }
 
         // Check if file is a valid image
-        if (!$value->isValid()) {
+        if (! $value->isValid()) {
             $fail('The :attribute file is not valid.');
+
             return;
         }
 
         try {
             // Convert image to base64 for moderation
             $contents = file_get_contents($value->getRealPath());
-            
+
             if ($contents === false) {
                 $fail('Unable to read :attribute file.');
+
                 return;
             }
-            
+
             $imageData = base64_encode($contents);
 
             // Moderate the image
@@ -83,6 +86,7 @@ class SafeImage implements ValidationRule
                     'attribute' => $attribute,
                 ]);
                 $fail('Unable to validate :attribute safety. Please try again.');
+
                 return;
             }
 

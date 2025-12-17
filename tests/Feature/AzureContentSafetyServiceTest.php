@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use Mockery;
-use Orchestra\Testbench\TestCase;
-use Illuminate\Database\Eloquent\Model;
 use Gowelle\AzureModerator\AzureContentSafetyServiceProvider;
 use Gowelle\AzureModerator\Contracts\AzureContentSafetyServiceContract;
+use Illuminate\Database\Eloquent\Model;
+use Mockery;
+use Orchestra\Testbench\TestCase;
 
 class AzureContentSafetyServiceTest extends TestCase
 {
@@ -22,15 +22,15 @@ class AzureContentSafetyServiceTest extends TestCase
         // Setup default database to use sqlite :memory:
         $app['config']->set('database.default', 'testbench');
         $app['config']->set('database.connections.testbench', [
-            'driver'   => 'sqlite',
+            'driver' => 'sqlite',
             'database' => ':memory:',
-            'prefix'   => '',
+            'prefix' => '',
         ]);
 
         // Set Azure config - use test values
         $app['config']->set('azure-moderator', [
             'endpoint' => 'https://test-endpoint.com',
-            'api_key' => 'test-api-key'
+            'api_key' => 'test-api-key',
         ]);
     }
 
@@ -51,7 +51,7 @@ class AzureContentSafetyServiceTest extends TestCase
 
         // Mock the service with specific scenarios
         $mock = Mockery::mock(AzureContentSafetyServiceContract::class);
-        
+
         // Low rating scenario
         $mock->shouldReceive('moderate')
             ->withArgs(function ($content, $rating) {
@@ -59,7 +59,7 @@ class AzureContentSafetyServiceTest extends TestCase
             })
             ->andReturn([
                 'status' => 'flagged',
-                'reason' => 'low_rating'
+                'reason' => 'low_rating',
             ]);
 
         // High risk content scenario
@@ -69,23 +69,23 @@ class AzureContentSafetyServiceTest extends TestCase
             })
             ->andReturn([
                 'status' => 'flagged',
-                'reason' => 'high_risk_content'
+                'reason' => 'high_risk_content',
             ]);
 
         // Clean content scenario
         $mock->shouldReceive('moderate')
             ->withArgs(function ($content, $rating) {
-                return $rating > 2.0 && !str_contains(strtolower($content), 'inappropriate');
+                return $rating > 2.0 && ! str_contains(strtolower($content), 'inappropriate');
             })
             ->andReturn([
                 'status' => 'approved',
-                'reason' => null
+                'reason' => null,
             ]);
 
         $this->app->instance(AzureContentSafetyServiceContract::class, $mock);
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         parent::tearDown();
         Mockery::close();
@@ -102,7 +102,7 @@ class AzureContentSafetyServiceTest extends TestCase
         ]);
 
         $response = $service->moderate($review->content, $review->rating);
-        
+
         $this->assertEquals([
             'status' => 'approved',
             'reason' => null,
@@ -143,7 +143,7 @@ class AzureContentSafetyServiceTest extends TestCase
 
         $this->assertEquals([
             'status' => 'flagged',
-            'reason' => 'low_rating'
+            'reason' => 'low_rating',
         ], $response);
 
         $lowRatingReview->status = $response['status'];
@@ -163,7 +163,7 @@ class AzureContentSafetyServiceTest extends TestCase
 
         $this->assertEquals([
             'status' => 'flagged',
-            'reason' => 'high_risk_content'
+            'reason' => 'high_risk_content',
         ], $response);
 
         $highRiskReview->status = $response['status'];
@@ -178,6 +178,8 @@ class AzureContentSafetyServiceTest extends TestCase
 class TestReview extends Model
 {
     protected $table = 'test_reviews';
+
     protected $fillable = ['content', 'rating', 'status', 'moderation_reason'];
+
     public $timestamps = true;
 }
