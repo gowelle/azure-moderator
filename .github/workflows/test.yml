@@ -39,7 +39,6 @@ jobs:
   integration-tests:
     name: Integration Tests
     runs-on: ubuntu-latest
-    if: ${{ secrets.AZURE_CONTENT_SAFETY_API_KEY != '' }}
     
     steps:
       - name: Checkout code
