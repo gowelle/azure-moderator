@@ -60,7 +60,7 @@ class ModerationResult
     /**
      * Convert the result to an array
      *
-     * @return array{status: string, reason: string|null, trackingId: string|null, categoriesAnalysis: array, blocklistMatches: array|null}
+     * @return array{status: string, reason: string|null, trackingId: string|null, categoriesAnalysis: array<array{category: string, severity: int}>, blocklistMatches: array<array{blocklistName: string, matchId: string, matchValue: string}>|null}
      */
     public function toArray(): array
     {

@@ -80,8 +80,8 @@ class SafeImage implements ValidationRule
                 encoding: 'base64'
             );
 
-            // Check if API failed (indicated by null analysis) and strict mode is enabled
-            if ($result->categoriesAnalysis === null && config('azure-moderator.fail_on_api_error', false)) {
+            // Check if API failed (indicated by empty analysis) and strict mode is enabled
+            if (empty($result->categoriesAnalysis) && config('azure-moderator.fail_on_api_error', false)) {
                 \Illuminate\Support\Facades\Log::warning('Image moderation API unavailable', [
                     'attribute' => $attribute,
                 ]);

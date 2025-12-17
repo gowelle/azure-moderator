@@ -33,18 +33,28 @@ interface AzureContentSafetyServiceContract
      * @param  array<string>|null  $categories  Optional categories to analyze, defaults to all categories
      * @param  array<string>|null  $blocklistNames  Optional blocklist names to check against
      * @param  bool  $haltOnBlocklistHit  Whether to halt analysis on blocklist match
-     * @return array{status: string, reason: string|null, blocklistMatches: mixed} Returns an array with moderation status, optional reason, and blocklist matches
+     * ```
+     */
+    /**
+     * Moderate text content using Azure Content Safety API
+     *
+     * This method analyzes text content for potentially harmful content and
+     * combines it with a user rating to determine if the content should be
+     * approved or flagged for review.
+     *
+     * @param  string  $text  The text content to analyze (must not be empty)
+     * @param  float  $rating  User rating between 0 and 5 (inclusive)
+     * @param  array<string>|null  $categories  Optional categories to analyze, defaults to all categories
+     * @param  array<string>|null  $blocklistNames  Optional blocklist names to check against
+     * @param  bool  $haltOnBlocklistHit  Whether to halt analysis on blocklist match
+     * @return \Gowelle\AzureModerator\Data\ModerationResult Returns a moderation result DTO
      *
      * @throws \Gowelle\AzureModerator\Exceptions\ModerationException When API request fails
      * @throws \InvalidArgumentException When input validation fails
      *
      * Example response:
      * ```php
-     * [
-     *     'status' => 'approved',
-     *     'reason' => null,
-     *     'blocklistMatches' => null
-     * ]
+     * new ModerationResult(status: ModerationStatus::APPROVED)
      * ```
      */
     /**
@@ -97,7 +107,7 @@ interface AzureContentSafetyServiceContract
     /**
      * Moderate a batch of content items
      *
-     * @param  array<array{type: string, content: string, rating?: float}>  $items
+     * @param  array<array{type: string, content: string, rating?: float, categories?: array<string>, blocklistNames?: array<string>, encoding?: string}>  $items
      * @return array<int, \Gowelle\AzureModerator\Data\ModerationResult>
      */
     public function moderateBatch(array $items): array;
@@ -105,7 +115,12 @@ interface AzureContentSafetyServiceContract
     /**
      * Moderate text content with image context (Multi-modal)
      * 
-     * @return array<string, \Gowelle\AzureModerator\Data\ModerationResult> Keyed by 'text' and 'image'
+     * @param  string  $text  The text content to analyze
+     * @param  float  $rating  User rating
+     * @param  string|null  $imageUrl  Optional image URL
+     * @param  array<string>|null  $categories  Optional categories to analyze
+     * @param  array<string>|null  $blocklistNames  Optional blocklist names
+     * @return array{text: \Gowelle\AzureModerator\Data\ModerationResult, image: \Gowelle\AzureModerator\Data\ModerationResult|null, combined: \Gowelle\AzureModerator\Data\ModerationResult} Keyed by 'text' and 'image'
      */
     public function moderateWithContext(
         string $text,

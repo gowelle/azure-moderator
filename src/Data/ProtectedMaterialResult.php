@@ -9,7 +9,7 @@ class ProtectedMaterialResult
 {
     /**
      * @param bool $detected Whether protected material was detected
-     * @param array $details Raw analysis details from API
+     * @param array<string, mixed> $details Raw analysis details from API
      */
     public function __construct(
         public readonly bool $detected,

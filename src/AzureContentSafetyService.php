@@ -52,7 +52,7 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
      * @param  array<string>|null  $categories  Optional categories to analyze, defaults to all
      * @param  array<string>|null  $blocklistNames  Optional blocklist names to check against
      * @param  bool  $haltOnBlocklistHit  Whether to halt analysis on blocklist match
-     * @return array{status: string, reason: string|null, blocklistMatches: array|null} Moderation result
+     * @return \Gowelle\AzureModerator\Data\ModerationResult Moderation result
      */
     public function moderate(
         string $text,
@@ -257,7 +257,7 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
      * @param  string  $image  Either a URL to the image or base64-encoded image data
      * @param  array<string>|null  $categories  Optional categories to analyze, defaults to all
      * @param  string  $encoding  Either 'url' (default) or 'base64' to indicate image format
-     * @return array{status: string, reason: string|null, scores: array<array{category: string, severity: int}>|null} Moderation result
+     * @return \Gowelle\AzureModerator\Data\ModerationResult Moderation result
      */
     public function moderateImage(
         string $image,
@@ -417,7 +417,7 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
      * Each item should specify its type and relevant parameters.
      *
      * @param  array<array{type: string, content: string, rating?: float, categories?: array<string>, blocklistNames?: array<string>, encoding?: string}>  $items
-     * @return array<array{status: string, reason: string|null, index: int, type: string}> Results for each item
+     * @return array<int, \Gowelle\AzureModerator\Data\ModerationResult> Results for each item
      */
     public function moderateBatch(array $items): array
     {
@@ -469,7 +469,7 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
      * @param  string|null  $imageUrl  Optional image URL for context
      * @param  array<string>|null  $categories  Optional categories to analyze
      * @param  array<string>|null  $blocklistNames  Optional blocklist names
-     * @return array{text: array, image: array|null, combined: array{status: string, reason: string|null}} Combined moderation result
+     * @return array{text: \Gowelle\AzureModerator\Data\ModerationResult, image: \Gowelle\AzureModerator\Data\ModerationResult|null, combined: \Gowelle\AzureModerator\Data\ModerationResult} Combined moderation result
      */
     public function moderateWithContext(
         string $text,
@@ -514,5 +514,6 @@ class AzureContentSafetyService implements \Gowelle\AzureModerator\Contracts\Azu
             'image' => $imageResult,
             'combined' => $combinedResult,
         ];
+
     }
 }

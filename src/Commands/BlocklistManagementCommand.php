@@ -103,11 +103,11 @@ class BlocklistManagementCommand extends Command
 
         $this->info("Creating blocklist: {$name}");
 
-        $result = $this->blocklistService->createBlocklist($name, $description);
+        $blocklist = $this->blocklistService->createBlocklist($name, $description);
 
         $this->info('✓ Blocklist created successfully!');
-        $this->line("Name: {$result['blocklistName']}");
-        $this->line("Description: {$result['description']}");
+        $this->line("Name: {$blocklist->name}");
+        $this->line("Description: {$blocklist->description}");
 
         return self::SUCCESS;
     }
@@ -119,8 +119,7 @@ class BlocklistManagementCommand extends Command
     {
         $this->info('Fetching blocklists...');
 
-        $result = $this->blocklistService->listBlocklists();
-        $blocklists = $result['value'] ?? [];
+        $blocklists = $this->blocklistService->listBlocklists();
 
         if (empty($blocklists)) {
             $this->warn('No blocklists found.');
@@ -135,9 +134,8 @@ class BlocklistManagementCommand extends Command
         $tableData = [];
         foreach ($blocklists as $blocklist) {
             $tableData[] = [
-                $blocklist['blocklistName'],
-                /** @phpstan-ignore-next-line */
-                $blocklist['description'] ?? 'N/A',
+                $blocklist->name,
+                $blocklist->description ?? 'N/A',
             ];
         }
 
@@ -167,9 +165,8 @@ class BlocklistManagementCommand extends Command
         $this->newLine();
         $this->line('Blocklist Details');
         $this->line(str_repeat('=', 50));
-        $this->line("Name: {$blocklist['blocklistName']}");
-        /** @phpstan-ignore-next-line */
-        $description = $blocklist['description'] ?? 'N/A';
+        $this->line("Name: {$blocklist->name}");
+        $description = $blocklist->description ?? 'N/A';
         $this->line("Description: {$description}");
 
         return self::SUCCESS;
@@ -225,8 +222,8 @@ class BlocklistManagementCommand extends Command
 
         if (! empty($items)) {
             $this->info('✓ Term added successfully!');
-            $this->line("Item ID: {$items[0]['blocklistItemId']}");
-            $this->line("Text: {$items[0]['text']}");
+            $this->line("Item ID: {$items[0]->id}");
+            $this->line("Text: {$items[0]->text}");
         } else {
             $this->warn('Term may have been added, but no confirmation received.');
         }
@@ -274,8 +271,7 @@ class BlocklistManagementCommand extends Command
 
         $this->info("Fetching items for blocklist: {$blocklistName}");
 
-        $result = $this->blocklistService->listBlocklistItems($blocklistName);
-        $items = $result['value'] ?? [];
+        $items = $this->blocklistService->listBlocklistItems($blocklistName);
 
         if (empty($items)) {
             $this->warn('No items found in this blocklist.');
@@ -290,8 +286,8 @@ class BlocklistManagementCommand extends Command
         $tableData = [];
         foreach ($items as $item) {
             $tableData[] = [
-                $item['blocklistItemId'],
-                $item['text'],
+                $item->id,
+                $item->text,
             ];
         }
 
