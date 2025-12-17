@@ -11,13 +11,16 @@ A Laravel package for content moderation using Azure Content Safety API. This pa
 
 - Easy integration with Azure Content Safety API
 - **Text and Image content moderation**
+- **Multi-Modal Analysis (Batch & Async)**
+- **Custom Blocklist Management**
+- **Protected Material Detection**
 - Automatic content analysis and flagging
 - Configurable severity thresholds
 - User rating support (for text moderation)
-- Laravel validation rules for images
-- Artisan command for testing
+- Laravel validation rules for text and images
+- Artisan commands for testing & management
 - Retry handling for API failures
-- **Comprehensive test suite (89 tests)**
+- **Comprehensive test suite (54+ tests)**
 - **Integration tests with real Azure API**
 - **PHPStan level 6 static analysis**
 - **Performance benchmarks**
@@ -77,11 +80,11 @@ use Gowelle\AzureModerator\Facades\AzureModerator;
 $result = AzureModerator::moderate('Some text content', 4.5);
 
 // Check result
-if ($result['status'] === 'approved') {
+if ($result->isApproved()) {
     // Content is safe
 } else {
     // Content was flagged
-    $reason = $result['reason'];
+    $reason = $result->reason;
 }
 ```
 
@@ -111,12 +114,12 @@ use Gowelle\AzureModerator\Facades\AzureModerator;
 $result = AzureModerator::moderateImage('https://example.com/image.jpg');
 
 // Check result
-if ($result['status'] === 'approved') {
+if ($result->isApproved()) {
     // Image is safe
 } else {
     // Image was flagged
-    $reason = $result['reason'];
-    $scores = $result['scores']; // Detailed severity scores
+    $reason = $result->reason;
+    $scores = $result->categoriesAnalysis; // Detailed severity scores
 }
 ```
 
@@ -223,6 +226,80 @@ The package includes automatic retry logic with exponential backoff for:
 - Server errors (500, 503)
 - Up to 3 retry attempts per request
 
+### Multi-Modal Analysis (Batch & Async)
+
+Process multiple items or perform context-aware analysis:
+
+```php
+// Batch Moderation
+$results = AzureModerator::moderateBatch([
+    ['type' => 'text', 'content' => 'Comment 1', 'rating' => 4.5],
+    ['type' => 'image', 'content' => 'https://example.com/img.jpg'],
+]);
+
+// Context-Aware (Text + Image)
+$result = AzureModerator::moderateWithContext(
+    text: 'Check this out!',
+    imageUrl: 'https://example.com/meme.jpg',
+    rating: 4.0
+);
+```
+
+For background processing, dispatch the job:
+
+```php
+use Gowelle\AzureModerator\Jobs\ModerateContentJob;
+
+ModerateContentJob::dispatch(
+    contentType: 'text',
+    content: 'User bio update',
+    rating: 4.5,
+    metadata: ['user_id' => 123]
+);
+```
+
+### Custom Blocklists
+
+Manage custom blocklists to filter specific terms.
+
+```bash
+# Create and manage lists via CLI
+php artisan azure-moderator:blocklist create my-list "Banned words"
+php artisan azure-moderator:blocklist add-item my-list "forbidden_term"
+```
+
+Use in moderation:
+
+```php
+$result = AzureModerator::moderate(
+    text: 'Some text',
+    rating: 4.5,
+    blocklistNames: ['my-list']
+);
+```
+
+See [Blocklists Guide](docs/BLOCKLISTS.md) for full details.
+
+### Protected Material Detection
+
+Detect copyrighted content in text:
+
+```bash
+php artisan azure-moderator:test-protected "Lyrics to a song..."
+```
+
+Or use the validation rule:
+
+```php
+use Gowelle\AzureModerator\Rules\SafeText;
+
+$request->validate([
+    'content' => ['required', new SafeText()],
+]);
+```
+
+See [Protected Material Guide](docs/PROTECTED_MATERIAL.md) for details.
+
 ### Artisan Commands
 
 Test image moderation from the command line:
@@ -316,6 +393,8 @@ To enable integration tests in CI, add these secrets to your repository:
 
 ### Documentation
 
+- [Blocklists Guide](docs/BLOCKLISTS.md)
+- [Protected Material Guide](docs/PROTECTED_MATERIAL.md)
 - [Integration Testing Guide](docs/INTEGRATION_TESTING.md)
 - [Performance Testing Guide](docs/PERFORMANCE_TESTING.md)
 - [Troubleshooting Guide](docs/TROUBLESHOOTING.md)

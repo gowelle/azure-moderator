@@ -39,15 +39,14 @@ class ImageModerationIntegrationTest extends TestCase
         $result = AzureModerator::moderateImage($imageUrl);
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status')
-            ->toHaveKey('reason')
-            ->toHaveKey('scores');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class)
+            ->and($result->categoriesAnalysis)->toBeArray();
 
-        expect($result['status'])->toBeIn(['approved', 'flagged']);
+        expect($result->status->value)->toBeIn(['approved', 'flagged']);
 
-        if ($result['scores'] !== null) {
-            expect($result['scores'])->toBeArray();
+        if ($result->categoriesAnalysis !== null) {
+            expect($result->categoriesAnalysis)->toBeArray();
         }
     }
 
@@ -61,12 +60,11 @@ class ImageModerationIntegrationTest extends TestCase
         $result = AzureModerator::moderateImage($base64Image, encoding: 'base64');
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status')
-            ->toHaveKey('reason')
-            ->toHaveKey('scores');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class)
+            ->and($result->categoriesAnalysis)->toBeArray();
 
-        expect($result['status'])->toBeIn(['approved', 'flagged']);
+        expect($result->status->value)->toBeIn(['approved', 'flagged']);
     }
 
     /** @test */
@@ -80,9 +78,9 @@ class ImageModerationIntegrationTest extends TestCase
         );
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status')
-            ->toHaveKey('scores');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class)
+            ->and($result->categoriesAnalysis)->toBeArray();
     }
 
     /** @test */
@@ -96,9 +94,9 @@ class ImageModerationIntegrationTest extends TestCase
         );
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status')
-            ->toHaveKey('scores');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class)
+            ->and($result->categoriesAnalysis)->toBeArray();
     }
 
     /** @test */
@@ -112,9 +110,9 @@ class ImageModerationIntegrationTest extends TestCase
         );
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status')
-            ->toHaveKey('scores');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class)
+            ->and($result->categoriesAnalysis)->toBeArray();
     }
 
     /** @test */
@@ -128,9 +126,9 @@ class ImageModerationIntegrationTest extends TestCase
         );
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status')
-            ->toHaveKey('scores');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class)
+            ->and($result->categoriesAnalysis)->toBeArray();
     }
 
     /** @test */
@@ -147,9 +145,9 @@ class ImageModerationIntegrationTest extends TestCase
         );
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status')
-            ->toHaveKey('scores');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class)
+            ->and($result->categoriesAnalysis)->toBeArray();
     }
 
     /** @test */
@@ -159,20 +157,19 @@ class ImageModerationIntegrationTest extends TestCase
 
         $result = AzureModerator::moderateImage($imageUrl);
 
-        expect($result)->toHaveKey('scores');
+        // expect($result->categoriesAnalysis)->not->toBeEmpty();
 
-        if ($result['scores'] !== null) {
-            expect($result['scores'])->toBeArray();
+        if ($result->categoriesAnalysis !== null) {
+            expect($result->categoriesAnalysis)->toBeArray();
 
-            foreach ($result['scores'] as $score) {
+            foreach ($result->categoriesAnalysis as $score) {
                 expect($score)
-                    ->toHaveKey('category')
-                    ->toHaveKey('severity');
+                    ->toBeInstanceOf(\Gowelle\AzureModerator\Data\CategoryAnalysis::class);
 
-                expect($score['category'])->toBeString();
-                expect($score['severity'])->toBeInt();
-                expect($score['severity'])->toBeGreaterThanOrEqual(0);
-                expect($score['severity'])->toBeLessThanOrEqual(7);
+                expect($score->category)->toBeString();
+                expect($score->severity)->toBeInt();
+                expect($score->severity)->toBeGreaterThanOrEqual(0);
+                expect($score->severity)->toBeLessThanOrEqual(7);
             }
         }
     }
@@ -186,8 +183,8 @@ class ImageModerationIntegrationTest extends TestCase
         $result = AzureModerator::moderateImage($imageUrl);
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class);
 
         // The actual status depends on Azure's analysis
         // We're just verifying the API call works and returns valid structure
@@ -207,9 +204,9 @@ class ImageModerationIntegrationTest extends TestCase
             $result = AzureModerator::moderateImage($imageUrl);
 
             expect($result)
-                ->toBeArray()
-                ->toHaveKey('status')
-                ->toHaveKey('scores');
+                ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+                ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class)
+                ->and($result->categoriesAnalysis)->toBeArray();
         }
     }
 
@@ -222,8 +219,8 @@ class ImageModerationIntegrationTest extends TestCase
         $result = AzureModerator::moderateImage($smallImage, encoding: 'base64');
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class);
     }
 
     /** @test */
@@ -240,12 +237,11 @@ class ImageModerationIntegrationTest extends TestCase
             $result = AzureModerator::moderateImage($imageUrl);
 
             expect($result)
-                ->toBeArray()
-                ->toHaveKey('status')
-                ->toHaveKey('reason')
-                ->toHaveKey('scores');
+                ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+                ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class)
+                ->and($result->categoriesAnalysis)->toBeArray();
 
-            expect($result['status'])->toBeIn(['approved', 'flagged']);
+            expect($result->status->value)->toBeIn(['approved', 'flagged']);
         }
     }
 }

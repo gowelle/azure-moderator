@@ -35,8 +35,7 @@ class AzureContentSafetyIntegrationTest extends TestCase
 
         $response = $service->moderate('This is a test message', 5.0);
 
-        $this->assertIsArray($response);
-        $this->assertArrayHasKey('status', $response);
-        $this->assertContains($response['status'], ['approved', 'flagged']);
+        $this->assertInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class, $response);
+        $this->assertTrue(in_array($response->status->value, ['approved', 'flagged']));
     }
 }

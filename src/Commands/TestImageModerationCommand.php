@@ -2,6 +2,7 @@
 
 namespace Gowelle\AzureModerator\Commands;
 
+use Gowelle\AzureModerator\Data\ModerationResult;
 use Gowelle\AzureModerator\Exceptions\ModerationException;
 use Gowelle\AzureModerator\Facades\AzureModerator;
 use Illuminate\Console\Command;
@@ -100,13 +101,13 @@ class TestImageModerationCommand extends Command
     /**
      * Display the moderation results
      *
-     * @param  array{status: string, reason: string|null, scores: array<array{category: string, severity: int}>|null}  $result  The moderation result
+     * @param  ModerationResult  $result  The moderation result
      */
-    protected function displayResults(array $result): void
+    protected function displayResults(ModerationResult $result): void
     {
-        $status = $result['status'];
-        $reason = $result['reason'] ?? null;
-        $scores = $result['scores'] ?? [];
+        $status = $result->isApproved() ? 'approved' : 'flagged';
+        $reason = $result->reason;
+        $scores = $result->categoriesAnalysis;
 
         // Display header
         $this->newLine();
@@ -130,8 +131,8 @@ class TestImageModerationCommand extends Command
 
             $tableData = [];
             foreach ($scores as $score) {
-                $category = $score['category'];
-                $severity = $score['severity'];
+                $category = $score->category;
+                $severity = $score->severity;
 
                 // Color code based on severity
                 $severityDisplay = match (true) {

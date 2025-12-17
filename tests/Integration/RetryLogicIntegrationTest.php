@@ -39,8 +39,8 @@ class RetryLogicIntegrationTest extends TestCase
         $duration = $endTime - $startTime;
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class);
 
         // Without retries, the request should complete relatively quickly (< 5 seconds)
         expect($duration)->toBeLessThan(5.0);
@@ -58,9 +58,9 @@ class RetryLogicIntegrationTest extends TestCase
 
         // Should return approved due to graceful degradation
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status', 'approved')
-            ->toHaveKey('reason', null);
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status->value)->toBe('approved')
+            ->and($result->reason)->toBeNull();
     }
 
     /** @test */
@@ -75,9 +75,9 @@ class RetryLogicIntegrationTest extends TestCase
 
         // Should return approved due to graceful degradation
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status', 'approved')
-            ->toHaveKey('reason', null);
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status->value)->toBe('approved')
+            ->and($result->reason)->toBeNull();
     }
 
     /** @test */
@@ -140,8 +140,8 @@ class RetryLogicIntegrationTest extends TestCase
         $result = AzureModerator::moderate('Test message for timeout handling.', 4.0);
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class);
     }
 
     /** @test */
@@ -158,9 +158,8 @@ class RetryLogicIntegrationTest extends TestCase
 
         foreach ($results as $result) {
             expect($result)
-                ->toBeArray()
-                ->toHaveKey('status')
-                ->toHaveKey('reason');
+                ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+                ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class);
         }
     }
 
@@ -179,8 +178,8 @@ class RetryLogicIntegrationTest extends TestCase
         // All results should have the same structure
         foreach ($results as $result) {
             expect($result)
-                ->toBeArray()
-                ->toHaveKeys(['status', 'reason']);
+                ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+                ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class);
         }
 
         // Note: The actual status might vary slightly due to Azure's analysis,

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Gowelle\AzureModerator\Data\ModerationResult;
 use Gowelle\AzureModerator\Facades\AzureModerator;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -35,13 +36,12 @@ class ImageModerationTest extends TestCase
 
         $result = AzureModerator::moderateImage('https://example.com/safe-image.jpg');
 
-        expect($result)
-            ->toBeArray()
-            ->toHaveKey('status', 'approved')
-            ->toHaveKey('reason', null)
-            ->toHaveKey('scores');
+        expect($result)->toBeInstanceOf(ModerationResult::class)
+            ->and($result->isApproved())->toBeTrue()
+            ->and($result->reason)->toBeNull()
+            ->and($result->categoriesAnalysis)->not->toBeEmpty();
 
-        expect($result['scores'])->toHaveCount(4);
+        expect($result->categoriesAnalysis)->toHaveCount(4);
     }
 
     /** @test */
@@ -60,11 +60,10 @@ class ImageModerationTest extends TestCase
 
         $result = AzureModerator::moderateImage('https://example.com/unsafe-image.jpg');
 
-        expect($result)
-            ->toBeArray()
-            ->toHaveKey('status', 'flagged')
-            ->toHaveKey('reason', 'Sexual')
-            ->toHaveKey('scores');
+        expect($result)->toBeInstanceOf(ModerationResult::class)
+            ->and($result->isFlagged())->toBeTrue()
+            ->and($result->reason)->toContain('Sexual')
+            ->and($result->categoriesAnalysis)->not->toBeEmpty();
     }
 
     /** @test */
@@ -85,9 +84,8 @@ class ImageModerationTest extends TestCase
 
         $result = AzureModerator::moderateImage($base64Image, encoding: 'base64');
 
-        expect($result)
-            ->toBeArray()
-            ->toHaveKey('status', 'approved');
+        expect($result)->toBeInstanceOf(ModerationResult::class)
+            ->and($result->isApproved())->toBeTrue();
 
         // Verify the request payload
         Http::assertSent(function ($request) use ($base64Image) {
@@ -140,7 +138,7 @@ class ImageModerationTest extends TestCase
             categories: ['Sexual', 'Violence']
         );
 
-        expect($result)->toHaveKey('status', 'approved');
+        expect($result->isApproved())->toBeTrue();
 
         Http::assertSent(function ($request) {
             $data = $request->data();
@@ -165,9 +163,11 @@ class ImageModerationTest extends TestCase
 
         $result = AzureModerator::moderateImage('https://example.com/image.jpg');
 
-        expect($result)
-            ->toHaveKey('status', 'flagged')
-            ->toHaveKey('reason', 'Hate, Sexual, Violence');
+        expect($result)->toBeInstanceOf(ModerationResult::class)
+            ->and($result->isFlagged())->toBeTrue()
+            ->and($result->reason)->toContain('Hate')
+            ->and($result->reason)->toContain('Sexual')
+            ->and($result->reason)->toContain('Violence');
     }
 
     /** @test */
@@ -223,11 +223,10 @@ class ImageModerationTest extends TestCase
 
         $result = AzureModerator::moderateImage('https://example.com/image.jpg');
 
-        expect($result)
-            ->toBeArray()
-            ->toHaveKey('status', 'approved')
-            ->toHaveKey('reason', null)
-            ->toHaveKey('scores', null);
+        expect($result)->toBeInstanceOf(ModerationResult::class)
+            ->and($result->isApproved())->toBeTrue()
+            ->and($result->reason)->toBeNull()
+            ->and($result->categoriesAnalysis)->toBeEmpty();
     }
 
     /** @test */
@@ -249,7 +248,7 @@ class ImageModerationTest extends TestCase
 
         $result = AzureModerator::moderateImage('https://example.com/image.jpg');
 
-        expect($result)->toHaveKey('status', 'approved');
+        expect($result->isApproved())->toBeTrue();
 
         // Should have made 3 attempts
         Http::assertSentCount(3);
@@ -274,7 +273,7 @@ class ImageModerationTest extends TestCase
         $result = AzureModerator::moderateImage('https://example.com/image.jpg');
 
         // Should be approved because severity 5 is below threshold of 6
-        expect($result)->toHaveKey('status', 'approved');
+        expect($result->isApproved())->toBeTrue();
     }
 
     /** @test */
@@ -293,10 +292,10 @@ class ImageModerationTest extends TestCase
 
         $result = AzureModerator::moderateImage('https://example.com/image.jpg');
 
-        expect($result['scores'])
+        expect($result->categoriesAnalysis)
             ->toHaveCount(4)
             ->each(function ($score) {
-                $score->toHaveKeys(['category', 'severity']);
+                $score->toBeInstanceOf(\Gowelle\AzureModerator\Data\CategoryAnalysis::class);
             });
     }
 }

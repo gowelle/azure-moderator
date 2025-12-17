@@ -76,4 +76,34 @@ return [
     |
     */
     'fail_on_api_error' => env('AZURE_MODERATOR_FAIL_ON_ERROR', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Custom Blocklists
+    |--------------------------------------------------------------------------
+    |
+    | Configure custom blocklists for text moderation. Blocklists allow you
+    | to define specific terms or phrases to be flagged in text content.
+    |
+    */
+    'blocklists' => [
+        /*
+        | Enable or disable blocklist checking globally
+        */
+        'enabled' => env('AZURE_MODERATOR_BLOCKLISTS_ENABLED', false),
+
+        /*
+        | Default blocklists to use for all moderation requests
+        | Comma-separated list of blocklist names
+        */
+        'default_blocklists' => array_filter(
+            explode(',', env('AZURE_MODERATOR_DEFAULT_BLOCKLISTS', ''))
+        ),
+
+        /*
+        | Whether to halt analysis immediately when a blocklist match is found
+        | If true, the API will not perform category analysis when blocklist matches
+        */
+        'halt_on_hit' => env('AZURE_MODERATOR_HALT_ON_BLOCKLIST_HIT', false),
+    ],
 ];

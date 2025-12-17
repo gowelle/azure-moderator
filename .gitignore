@@ -31,3 +31,4 @@ Homestead.json
 auth.json
 
 .phpunit.integration.xml
+.env.integration

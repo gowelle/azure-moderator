@@ -25,8 +25,10 @@ use Illuminate\Support\Facades\Facade;
  * $base64Result = AzureModerator::moderateImage($base64Data, encoding: 'base64');
  * ```
  *
- * @method static array moderate(string $text, float $rating, ?array $categories = null)
- * @method static array moderateImage(string $image, ?array $categories = null, string $encoding = 'url')
+ * @method static \Gowelle\AzureModerator\Data\ModerationResult moderate(string $text, float $rating, ?array $categories = null, ?array $blocklistNames = null, bool $haltOnBlocklistHit = false)
+ * @method static \Gowelle\AzureModerator\Data\ModerationResult moderateImage(string $image, ?array $categories = null, string $encoding = 'url')
+ * @method static array<int, \Gowelle\AzureModerator\Data\ModerationResult> moderateBatch(array $items)
+ * @method static array<string, \Gowelle\AzureModerator\Data\ModerationResult> moderateWithContext(string $text, float $rating, ?string $imageUrl = null, ?array $categories = null, ?array $blocklistNames = null)
  *
  * @see \Gowelle\AzureModerator\AzureContentSafetyService
  * @see \Gowelle\AzureModerator\Contracts\AzureContentSafetyServiceContract

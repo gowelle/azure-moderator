@@ -40,9 +40,8 @@ class FacadeIntegrationTest extends TestCase
         $result = AzureModerator::moderate('Test message via facade', 4.0);
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status')
-            ->toHaveKey('reason');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class);
     }
 
     /** @test */
@@ -51,10 +50,9 @@ class FacadeIntegrationTest extends TestCase
         $result = AzureModerator::moderateImage('https://via.placeholder.com/150');
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status')
-            ->toHaveKey('reason')
-            ->toHaveKey('scores');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class)
+            ->and($result->categoriesAnalysis)->toBeArray();
     }
 
     /** @test */

@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2025-12-17
+
+### Added - Phase 2: Advanced Moderation Features 🚀
+
+- **Multi-Modal Content Analysis**
+  - Batch moderation via `moderateBatch()`
+  - Context-aware moderation via `moderateWithContext()` (analyzing text + image together)
+  - `ModerateContentJob` for asynchronous processing via Laravel queues
+  - `ContentModerated` event dispatched upon completion
+  - Graceful degradation for batch processing failures
+
+- **Custom Blocklists**
+  - Full CRUD management for custom blocklists
+  - Creating, listing, updating, and deleting blocklists via `BlocklistService`
+  - Managing blocklist items (add/remove terms)
+  - Integration into `moderate()` method with `blocklistNames` and `haltOnBlocklistHit`
+  - `azure-moderator:blocklist` Artisan command for CLI management
+  - Configuration options for default blocklists
+
+- **Protected Material Detection**
+  - New `ProtectedMaterialService` to detect copyrighted text
+  - `SafeText` validation rule that checks for both harmful content and protected material
+  - `azure-moderator:test-protected` Artisan command for CLI testing
+
+### Changed
+- **Facade** - Added `moderateBatch` and `moderateWithContext` methods
+- **Configuration** - Added `lowRatingThreshold` as float support (was int)
+- **Documentation** - Added [BLOCKLISTS.md](docs/BLOCKLISTS.md) and [PROTECTED_MATERIAL.md](docs/PROTECTED_MATERIAL.md)
+
+### Technical Details
+- **Zero Breaking Changes** - All new features are additive
+- **Test Coverage** - 100% pass rate with 54 total tests (26 new tests)
+- **Static Analysis** - PHPStan Level 6 maintained with strict types
+- **Performance** - Optimized parallel processing for batch requests
+
 ## [1.3.0] - 2025-12-17
 
 ### Added - Phase 1: Testing & Quality Assurance ✅

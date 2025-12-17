@@ -210,6 +210,6 @@ class ImageModerationBenchmark extends TestCase
         echo '  Size: '.number_format($testSize / 1024 / 1024, 2)." MB\n";
         echo '  Time: '.number_format($time, 2)." ms\n";
 
-        expect($result)->toBeArray();
+        expect($result)->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class);
     }
 }

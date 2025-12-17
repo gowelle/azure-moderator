@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use Gowelle\AzureModerator\AzureContentSafetyServiceProvider;
 use Gowelle\AzureModerator\Contracts\AzureContentSafetyServiceContract;
+use Gowelle\AzureModerator\Data\ModerationResult;
+use Gowelle\AzureModerator\Enums\ModerationStatus;
 use Illuminate\Database\Eloquent\Model;
 use Mockery;
 use Orchestra\Testbench\TestCase;
@@ -57,30 +59,30 @@ class AzureContentSafetyServiceTest extends TestCase
             ->withArgs(function ($content, $rating) {
                 return $rating <= 2.0;
             })
-            ->andReturn([
-                'status' => 'flagged',
-                'reason' => 'low_rating',
-            ]);
+            ->andReturn(new ModerationResult(
+                status: ModerationStatus::FLAGGED,
+                reason: 'low_rating'
+            ));
 
         // High risk content scenario
         $mock->shouldReceive('moderate')
             ->withArgs(function ($content, $rating) {
                 return str_contains(strtolower($content), 'inappropriate');
             })
-            ->andReturn([
-                'status' => 'flagged',
-                'reason' => 'high_risk_content',
-            ]);
+            ->andReturn(new ModerationResult(
+                status: ModerationStatus::FLAGGED,
+                reason: 'high_risk_content'
+            ));
 
         // Clean content scenario
         $mock->shouldReceive('moderate')
             ->withArgs(function ($content, $rating) {
                 return $rating > 2.0 && ! str_contains(strtolower($content), 'inappropriate');
             })
-            ->andReturn([
-                'status' => 'approved',
-                'reason' => null,
-            ]);
+            ->andReturn(new ModerationResult(
+                status: ModerationStatus::APPROVED,
+                reason: null
+            ));
 
         $this->app->instance(AzureContentSafetyServiceContract::class, $mock);
     }
@@ -103,10 +105,8 @@ class AzureContentSafetyServiceTest extends TestCase
 
         $response = $service->moderate($review->content, $review->rating);
 
-        $this->assertEquals([
-            'status' => 'approved',
-            'reason' => null,
-        ], $response);
+        $this->assertEquals(ModerationStatus::APPROVED, $response->status);
+        $this->assertNull($response->reason);
     }
 
     /** @test */
@@ -121,8 +121,8 @@ class AzureContentSafetyServiceTest extends TestCase
 
         $response = $service->moderate($review->content, $review->rating);
 
-        $review->status = $response['status'];
-        $review->moderation_reason = $response['reason'];
+        $review->status = $response->status->value;
+        $review->moderation_reason = $response->reason;
         $review->save();
 
         $this->assertEquals('approved', $review->fresh()->status);
@@ -141,13 +141,11 @@ class AzureContentSafetyServiceTest extends TestCase
 
         $response = $service->moderate($lowRatingReview->content, $lowRatingReview->rating);
 
-        $this->assertEquals([
-            'status' => 'flagged',
-            'reason' => 'low_rating',
-        ], $response);
+        $this->assertEquals(ModerationStatus::FLAGGED, $response->status);
+        $this->assertEquals('low_rating', $response->reason);
 
-        $lowRatingReview->status = $response['status'];
-        $lowRatingReview->moderation_reason = $response['reason'];
+        $lowRatingReview->status = $response->status->value;
+        $lowRatingReview->moderation_reason = $response->reason;
         $lowRatingReview->save();
 
         $this->assertEquals('flagged', $lowRatingReview->fresh()->status);
@@ -161,13 +159,11 @@ class AzureContentSafetyServiceTest extends TestCase
 
         $response = $service->moderate($highRiskReview->content, $highRiskReview->rating);
 
-        $this->assertEquals([
-            'status' => 'flagged',
-            'reason' => 'high_risk_content',
-        ], $response);
+        $this->assertEquals(ModerationStatus::FLAGGED, $response->status);
+        $this->assertEquals('high_risk_content', $response->reason);
 
-        $highRiskReview->status = $response['status'];
-        $highRiskReview->moderation_reason = $response['reason'];
+        $highRiskReview->status = $response->status->value;
+        $highRiskReview->moderation_reason = $response->reason;
         $highRiskReview->save();
 
         $this->assertEquals('flagged', $highRiskReview->fresh()->status);

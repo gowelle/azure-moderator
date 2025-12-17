@@ -37,11 +37,10 @@ class TextModerationIntegrationTest extends TestCase
         $result = AzureModerator::moderate('This is a wonderful product. I really enjoyed using it!', 5.0);
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status')
-            ->toHaveKey('reason');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class);
 
-        expect($result['status'])->toBeIn(['approved', 'flagged']);
+        expect($result->status->value)->toBeIn(['approved', 'flagged']);
     }
 
     /** @test */
@@ -50,9 +49,9 @@ class TextModerationIntegrationTest extends TestCase
         $result = AzureModerator::moderate('This product is okay.', 1.5);
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status', 'flagged')
-            ->toHaveKey('reason', 'low_rating');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status->value)->toBe('flagged')
+            ->and($result->reason)->toBe('low_rating');
     }
 
     /** @test */
@@ -65,9 +64,8 @@ class TextModerationIntegrationTest extends TestCase
         );
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status')
-            ->toHaveKey('reason');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class);
     }
 
     /** @test */
@@ -80,9 +78,8 @@ class TextModerationIntegrationTest extends TestCase
         );
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status')
-            ->toHaveKey('reason');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class);
     }
 
     /** @test */
@@ -95,9 +92,8 @@ class TextModerationIntegrationTest extends TestCase
         );
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status')
-            ->toHaveKey('reason');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class);
     }
 
     /** @test */
@@ -110,9 +106,8 @@ class TextModerationIntegrationTest extends TestCase
         );
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status')
-            ->toHaveKey('reason');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class);
     }
 
     /** @test */
@@ -129,9 +124,8 @@ class TextModerationIntegrationTest extends TestCase
         );
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status')
-            ->toHaveKey('reason');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class);
     }
 
     /** @test */
@@ -141,8 +135,8 @@ class TextModerationIntegrationTest extends TestCase
         $result = AzureModerator::moderate('This is a neutral test message.', 4.0);
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class);
 
         // The actual status depends on Azure's analysis
         // We're just verifying the API call works and returns valid structure
@@ -157,11 +151,10 @@ class TextModerationIntegrationTest extends TestCase
             $result = AzureModerator::moderate("Test content with rating {$rating}", $rating);
 
             expect($result)
-                ->toBeArray()
-                ->toHaveKey('status')
-                ->toHaveKey('reason');
+                ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+                ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class);
 
-            expect($result['status'])->toBeIn(['approved', 'flagged']);
+            expect($result->status->value)->toBeIn(['approved', 'flagged']);
         }
     }
 
@@ -171,13 +164,13 @@ class TextModerationIntegrationTest extends TestCase
         $result = AzureModerator::moderate('Test message for structure validation.', 4.0);
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKeys(['status', 'reason']);
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class);
 
-        expect($result['status'])->toBeString();
-
-        if ($result['reason'] !== null) {
-            expect($result['reason'])->toBeString();
+        expect($result->status->value)->toBeString();
+        
+        if ($result->reason !== null) {
+            expect($result->reason)->toBeString();
         }
     }
 
@@ -189,8 +182,8 @@ class TextModerationIntegrationTest extends TestCase
         $result = AzureModerator::moderate('', 4.0);
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class);
     }
 
     /** @test */
@@ -202,9 +195,8 @@ class TextModerationIntegrationTest extends TestCase
         $result = AzureModerator::moderate($longText, 4.0);
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status')
-            ->toHaveKey('reason');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class);
     }
 
     /** @test */
@@ -215,9 +207,8 @@ class TextModerationIntegrationTest extends TestCase
         $result = AzureModerator::moderate($textWithSpecialChars, 4.0);
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status')
-            ->toHaveKey('reason');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class);
     }
 
     /** @test */
@@ -228,8 +219,7 @@ class TextModerationIntegrationTest extends TestCase
         $result = AzureModerator::moderate($unicodeText, 4.0);
 
         expect($result)
-            ->toBeArray()
-            ->toHaveKey('status')
-            ->toHaveKey('reason');
+            ->toBeInstanceOf(\Gowelle\AzureModerator\Data\ModerationResult::class)
+            ->and($result->status)->toBeInstanceOf(\Gowelle\AzureModerator\Enums\ModerationStatus::class);
     }
 }

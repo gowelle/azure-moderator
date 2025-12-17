@@ -4,34 +4,33 @@ This document outlines the development roadmap for the Azure Content Safety Lara
 
 ---
 
-## Current Status (v1.3.0 - Phase 1 Complete)
+## Current Status (v2.0.0 - Phase 2 In Progress)
 
 ### ✅ Completed Features
 - Text content moderation with Azure Content Safety API
 - Image moderation (URL and base64)
+- **Custom Blocklists & Protected Material Detection**
+- **Multi-Modal & Batch Moderation**
+- **Strict Data Transfer Objects (DTOs) for all responses**
 - Configurable severity thresholds
 - User rating support for text moderation
-- `SafeImage` Laravel validation rule
+- `SafeImage` & `SafeText` Laravel validation rules
 - Automatic retry logic with exponential backoff
 - Graceful degradation vs. strict validation modes
-- Artisan command for testing image moderation
-- Comprehensive unit test coverage (28 tests)
-- **Comprehensive integration test suite (50 tests)**
-- **Performance benchmarks (11 tests)**
-- **PHPStan level 6 static analysis (0 errors)**
-- **Mutation testing with Infection PHP**
-- **Detailed documentation (4 guides)**
+- Artisan commands for testing & management
+- Comprehensive unit test coverage
+- **Comprehensive integration test suite (70+ tests)**
+- **Performance benchmarks**
+- **Detailed documentation (6 guides)**
 - GitHub Actions CI pipeline
 
-### 🎉 Recently Completed (Phase 1)
-- ✅ Integration tests with real Azure API (61 total tests)
-- ✅ Performance benchmarking (~350-400ms average)
-- ✅ PHPStan level 6 with all errors fixed
-- ✅ Infection mutation testing setup
-- ✅ Integration testing guide
-- ✅ Performance testing guide
-- ✅ Troubleshooting guide
-- ✅ API response examples documentation
+### 🎉 Recently Completed (v2.0.0)
+- ✅ **DTO Refactoring**: strict typing with `ModerationResult`, `Blocklist`, etc.
+- ✅ **Custom Blocklists**: Create, manage, and use blocklists
+- ✅ **Protected Material**: Detect copyrighted text
+- ✅ **Multi-Modal**: Batch analysis and async jobs
+- ✅ Integration tests with real Azure API
+- ✅ Performance benchmarking
 
 ---
 
@@ -88,7 +87,7 @@ Establish comprehensive testing infrastructure including integration tests to en
 
 ---
 
-## Phase 2: Enhanced Moderation Features (Q2 2026)
+## Phase 2: Enhanced Moderation Features (Started Q4 2025)
 
 ### 🎯 Goal
 Expand moderation capabilities with advanced Azure Content Safety features.
@@ -103,21 +102,21 @@ Expand moderation capabilities with advanced Azure Content Safety features.
   - [ ] Artisan command for video testing
 
 ### Multi-Modal Content Analysis
-- [ ] Support combined text + image analysis
-- [ ] Contextual moderation (text with image context)
-- [ ] Batch moderation for multiple items
-- [ ] Asynchronous moderation with job queues
+- [x] Support combined text + image analysis
+- [x] Contextual moderation (text with image context)
+- [x] Batch moderation for multiple items
+- [x] Asynchronous moderation with job queues
 
 ### Custom Blocklists
-- [ ] Integrate Azure Custom Blocklists API
-  - [ ] Create and manage custom blocklists
-  - [ ] Add/remove terms from blocklists
-  - [ ] Apply blocklists to text moderation
-  - [ ] Blocklist management Artisan commands
+- [x] Integrate Azure Custom Blocklists API
+  - [x] Create and manage custom blocklists
+  - [x] Add/remove terms from blocklists
+  - [x] Apply blocklists to text moderation
+  - [x] Blocklist management Artisan commands
 
 ### Protected Material Detection
-- [ ] Integrate Azure Protected Material Detection
-  - [ ] Detect copyrighted text content
+- [x] Integrate Azure Protected Material Detection
+  - [x] Detect copyrighted text content
   - [ ] Detect copyrighted images
   - [ ] Custom protected material lists
 
@@ -318,17 +317,22 @@ Features are prioritized based on:
 - Enhanced error handling
 - Performance benchmarking
 
-### v2.0.0 (Q2 2026)
-- Video moderation
+### v2.0.0 (Q4 2025)
 - Custom blocklists
-- Breaking changes for improved API design
+- Protected material detection
+- Multi-modal & batch analysis
+- DTO refactoring (Breaking Change)
 
-### v2.1.0 (Q3 2026)
+### v2.1.0 (Q1 2026)
+- Video moderation
+- Integration with Laravel Media Library
+
+### v2.2.0 (Q3 2026)
 - Moderation dashboard
 - Enhanced Artisan commands
 - Testing utilities
 
-### v2.2.0 (Q4 2026)
+### v2.3.0 (Q4 2026)
 - Response caching
 - Queue integration
 - Performance optimizations
