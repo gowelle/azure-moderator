@@ -120,22 +120,13 @@ Expand moderation capabilities with advanced Azure Content Safety features.
   - [ ] Detect copyrighted images
   - [ ] Custom protected material lists
 
-### Analyze Multimodal API
-- [ ] Integrate Azure Analyze Multimodal API
-  - [ ] Support text-image pair analysis
-  - [ ] Combined contextual moderation scoring
+### Analyze Multimodal API (Preview) ✅
+- [x] Integrate Azure Analyze Multimodal API
+  - [x] Support text-image pair analysis
+  - [x] Combined contextual moderation scoring
   - [ ] Image-text relevance detection
   - [ ] Multi-modal batch processing
-  - [ ] `SafeMultimodal` validation rule
-
-### Groundedness Detection API
-- [ ] Integrate Azure Groundedness Detection API
-  - [ ] Detect AI-generated hallucinations
-  - [ ] Source document grounding verification
-  - [ ] Factual consistency scoring
-  - [ ] Custom grounding context support
-  - [ ] `GroundednessCheck` validation rule
-  - [ ] Artisan command for groundedness testing
+  - [x] `SafeMultimodal` validation rule
 
 ---
 

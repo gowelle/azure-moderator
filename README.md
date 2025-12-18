@@ -21,6 +21,7 @@ A Laravel package for content moderation using Azure Content Safety API. This pa
   - [Image Moderation](#image-moderation)
   - [Laravel Validation](#laravel-validation)
   - [Error Handling](#error-handling)
+  - [Multimodal Analysis (Preview)](#multimodal-analysis-preview)
   - [Multi-Modal Analysis (Batch & Async)](#multi-modal-analysis-batch--async)
   - [Custom Blocklists](#custom-blocklists)
   - [Protected Material Detection](#protected-material-detection)
@@ -43,10 +44,11 @@ A Laravel package for content moderation using Azure Content Safety API. This pa
 
 - Easy integration with Azure Content Safety API
 - **Text and Image content moderation**
+- **Multimodal Analysis (Preview)** - Combined text + image analysis
 - **Multi-Modal Analysis (Batch & Async)**
 - **Custom Blocklist Management**
 - **Protected Material Detection**
-- **Strongly-typed DTO responses** (ModerationResult, CategoryAnalysis)
+- **Strongly-typed DTO responses** (ModerationResult, CategoryAnalysis, MultimodalResult)
 - Automatic content analysis and flagging
 - Configurable severity thresholds
 - User rating support (for text moderation)
@@ -258,6 +260,57 @@ The package includes automatic retry logic with exponential backoff for:
 - Rate limit errors (429)
 - Server errors (500, 503)
 - Up to 3 retry attempts per request
+
+### Multimodal Analysis (Preview)
+
+> ⚠️ **Preview API**: Uses `2024-09-15-preview`. Feature availability varies by Azure region.
+
+Analyze images with associated text for contextual content moderation:
+
+```php
+use Gowelle\AzureModerator\MultimodalService;
+
+$service = app(MultimodalService::class);
+
+// Analyze image with caption
+$result = $service->analyze(
+    image: $base64ImageData,
+    text: 'User-provided caption',
+    encoding: 'base64',
+    enableOcr: true
+);
+
+if ($result->isFlagged()) {
+    echo $result->reason; // "High severity in: Violence"
+}
+```
+
+#### SafeMultimodal Validation Rule
+
+```php
+use Gowelle\AzureModerator\Rules\SafeMultimodal;
+
+$request->validate([
+    'image' => [
+        'required',
+        'image',
+        new SafeMultimodal(
+            text: $request->caption,
+            categories: ['Sexual', 'Violence']
+        )
+    ],
+]);
+```
+
+#### CLI Testing
+
+```bash
+# Test with URL
+php artisan azure-moderator:test-multimodal https://example.com/image.jpg --text="Caption"
+
+# Test with local file
+php artisan azure-moderator:test-multimodal ./path/to/image.jpg --local --text="Caption"
+```
 
 ### Multi-Modal Analysis (Batch & Async)
 

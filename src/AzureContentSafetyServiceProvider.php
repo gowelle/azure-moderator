@@ -4,6 +4,7 @@ namespace Gowelle\AzureModerator;
 
 use Gowelle\AzureModerator\Commands\BlocklistManagementCommand;
 use Gowelle\AzureModerator\Commands\TestImageModerationCommand;
+use Gowelle\AzureModerator\Commands\TestMultimodalCommand;
 use Gowelle\AzureModerator\Commands\TestProtectedMaterialCommand;
 use Gowelle\AzureModerator\Contracts\AzureContentSafetyServiceContract;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
@@ -30,6 +31,7 @@ class AzureContentSafetyServiceProvider extends PackageServiceProvider
                 TestImageModerationCommand::class,
                 BlocklistManagementCommand::class,
                 TestProtectedMaterialCommand::class,
+                TestMultimodalCommand::class,
             ])
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
@@ -58,5 +60,10 @@ class AzureContentSafetyServiceProvider extends PackageServiceProvider
         $this->app->singleton(ProtectedMaterialService::class, function ($app) {
             return new ProtectedMaterialService;
         });
+
+        $this->app->singleton(MultimodalService::class, function ($app) {
+            return new MultimodalService;
+        });
     }
 }
+

@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2025-12-18
+
+### Added - Multimodal API (Preview) 🎨
+
+- **Multimodal Content Analysis**
+  - New `MultimodalService` for combined text + image analysis
+  - `MultimodalResult` DTO with status, reason, and category scores
+  - `SafeMultimodal` validation rule for uploaded images with context text
+  - `azure-moderator:test-multimodal` Artisan command for CLI testing
+  - Support for URL and base64 image encoding
+  - OCR text extraction from images (configurable)
+  - Uses Azure Content Safety Preview API (`2024-09-15-preview`)
+
+- **Configuration**
+  - New `multimodal` config section with `enabled` and `enable_ocr` options
+  - `AZURE_MODERATOR_MULTIMODAL_ENABLED` env variable
+  - `AZURE_MODERATOR_MULTIMODAL_OCR` env variable
+
+- **Tests**
+  - 12 unit tests for `MultimodalService`
+  - 8 validation tests for `SafeMultimodal` rule
+  - 8 integration tests (skip gracefully when not available in region)
+
+### Technical Details
+- **Preview API**: Uses `2024-09-15-preview` version (may have breaking changes)
+- **Region Availability**: Feature not available in all Azure regions
+- **Test Coverage**: 74 total tests, 100% pass rate
+- **PHPStan**: Level 6 maintained with strict types
+
 ## [2.0.0] - 2025-12-17
 
 ### Added - Phase 2: Advanced Moderation Features 🚀
@@ -167,7 +196,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PHPUnit test suite
 - GitHub Actions CI pipeline
 
-[Unreleased]: https://github.com/gowelle/azure-moderator/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/gowelle/azure-moderator/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/gowelle/azure-moderator/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/gowelle/azure-moderator/compare/v1.3.0...v2.0.0
 [1.3.0]: https://github.com/gowelle/azure-moderator/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/gowelle/azure-moderator/compare/v1.1.0...v1.2.0

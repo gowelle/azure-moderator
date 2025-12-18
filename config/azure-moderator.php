@@ -106,4 +106,25 @@ return [
         */
         'halt_on_hit' => env('AZURE_MODERATOR_HALT_ON_BLOCKLIST_HIT', false),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Multimodal Analysis (Preview API)
+    |--------------------------------------------------------------------------
+    |
+    | Configure multimodal content analysis for combined text + image moderation.
+    | Note: This uses the Azure Content Safety Preview API (2024-09-15-preview).
+    |
+    */
+    'multimodal' => [
+        /*
+        | Enable or disable multimodal analysis
+        */
+        'enabled' => env('AZURE_MODERATOR_MULTIMODAL_ENABLED', true),
+
+        /*
+        | Whether to enable OCR text extraction from images by default
+        */
+        'enable_ocr' => env('AZURE_MODERATOR_MULTIMODAL_OCR', true),
+    ],
 ];
