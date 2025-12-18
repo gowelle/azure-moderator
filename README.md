@@ -7,6 +7,38 @@
 
 A Laravel package for content moderation using Azure Content Safety API. This package helps you analyze both text and image content for potentially harmful material, automatically flagging or approving content based on Azure's AI-powered analysis.
 
+---
+
+## Table of Contents
+
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Configuration](#configuration)
+  - [Configuration Options](#configuration-options)
+- [Usage](#usage)
+  - [Text Moderation](#text-moderation)
+  - [Image Moderation](#image-moderation)
+  - [Laravel Validation](#laravel-validation)
+  - [Error Handling](#error-handling)
+  - [Multi-Modal Analysis (Batch & Async)](#multi-modal-analysis-batch--async)
+  - [Custom Blocklists](#custom-blocklists)
+  - [Protected Material Detection](#protected-material-detection)
+  - [Artisan Commands](#artisan-commands)
+- [Testing](#testing)
+  - [Running Tests](#running-tests)
+  - [Integration Tests](#integration-tests)
+  - [Quality Tools](#quality-tools)
+  - [CI/CD](#cicd)
+- [Documentation](#documentation)
+- [Changelog](#changelog)
+- [Contributing](#contributing)
+- [Security](#security)
+- [Credits](#credits)
+- [License](#license)
+
+---
+
 ## Features
 
 - Easy integration with Azure Content Safety API
